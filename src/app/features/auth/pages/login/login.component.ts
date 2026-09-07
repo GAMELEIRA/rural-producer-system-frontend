@@ -19,6 +19,7 @@ export class LoginComponent {
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly registered = this.route.snapshot.queryParamMap.has('registered');
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],

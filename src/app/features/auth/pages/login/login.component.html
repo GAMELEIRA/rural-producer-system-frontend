@@ -1,6 +1,12 @@
 <h2 class="auth-page__title">Entrar</h2>
 <p class="auth-page__subtitle">Acesse sua conta para continuar.</p>
 
+@if (registered) {
+  <div class="auth-page__alert auth-page__alert--success" role="status">
+    Conta criada com sucesso! Faça login para continuar.
+  </div>
+}
+
 <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
   <app-form-field label="E-mail" [control]="form.controls.email" forId="email">
     <input
