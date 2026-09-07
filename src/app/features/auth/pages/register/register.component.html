@@ -1,5 +1,8 @@
 <h2 class="auth-page__title">Criar conta</h2>
-<p class="auth-page__subtitle">Preencha seus dados para começar.</p>
+<p class="auth-page__subtitle">
+  Preencha seus dados para começar. Campos com <span class="auth-page__required">*</span> são
+  obrigatórios.
+</p>
 
 <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
   <div class="auth-page__row">
@@ -24,7 +27,12 @@
     </app-form-field>
   </div>
 
-  <app-form-field label="E-mail" [control]="form.controls.email" forId="email">
+  <app-form-field
+    label="E-mail"
+    [control]="form.controls.email"
+    forId="email"
+    hint="Usaremos este e-mail para o seu acesso."
+  >
     <input
       id="email"
       type="email"
@@ -40,9 +48,10 @@
       type="password"
       formControlName="password"
       autocomplete="new-password"
-      placeholder="Mínimo 8 caracteres, letras e números"
+      placeholder="Crie uma senha"
     />
   </app-form-field>
+  <app-password-rules [control]="form.controls.password" />
 
   <app-form-field
     label="Confirmar senha"

@@ -1,7 +1,28 @@
-<div class="form-field" [class.form-field--error]="showError">
-  <label class="form-field__label" [attr.for]="forId()">{{ label() }}</label>
-  <ng-content />
-  @if (showError) {
-    <small class="form-field__error" role="alert">{{ errorMessage }}</small>
+<div
+  class="form-field"
+  [class.form-field--error]="showError()"
+  [class.form-field--valid]="showValid()"
+  [class.form-field--required]="required()"
+>
+  <label class="form-field__label" [attr.for]="forId()">
+    {{ label() }}
+    @if (required()) {
+      <span class="form-field__required" aria-hidden="true">*</span>
+      <span class="sr-only">(obrigatório)</span>
+    }
+  </label>
+  <div class="form-field__control">
+    <ng-content />
+    @if (showValid()) {
+      <span class="form-field__icon form-field__icon--valid" aria-hidden="true">✓</span>
+    }
+    @if (showError()) {
+      <span class="form-field__icon form-field__icon--error" aria-hidden="true">!</span>
+    }
+  </div>
+  @if (showError()) {
+    <small class="form-field__error" role="alert">{{ errorMessage() }}</small>
+  } @else if (hint()) {
+    <small class="form-field__hint">{{ hint() }}</small>
   }
 </div>

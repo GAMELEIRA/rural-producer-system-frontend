@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/notifications/notification.service';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { PasswordRulesComponent } from '../../../../shared/components/password-rules/password-rules.component';
 import {
   passwordMatchValidator,
   passwordStrengthValidator,
@@ -11,7 +12,7 @@ import {
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterLink, FormFieldComponent],
+  imports: [ReactiveFormsModule, RouterLink, FormFieldComponent, PasswordRulesComponent],
   templateUrl: './register.component.html',
   styleUrl: '../auth-page.scss',
 })

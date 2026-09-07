@@ -15,6 +15,11 @@
     font-size: 0.95rem;
   }
 
+  &__required {
+    color: var(--color-danger);
+    font-weight: 700;
+  }
+
   &__row {
     display: grid;
     grid-template-columns: 1fr 1fr;
