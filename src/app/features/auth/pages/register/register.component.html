@@ -1,0 +1,75 @@
+<h2 class="auth-page__title">Criar conta</h2>
+<p class="auth-page__subtitle">
+  Preencha seus dados para começar. Campos com <span class="auth-page__required">*</span> são
+  obrigatórios.
+</p>
+
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="auth-page__row">
+    <app-form-field label="Nome" [control]="form.controls.firstName" forId="firstName">
+      <input
+        id="firstName"
+        type="text"
+        formControlName="firstName"
+        autocomplete="given-name"
+        placeholder="Maria"
+      />
+    </app-form-field>
+
+    <app-form-field label="Sobrenome" [control]="form.controls.lastName" forId="lastName">
+      <input
+        id="lastName"
+        type="text"
+        formControlName="lastName"
+        autocomplete="family-name"
+        placeholder="Silva"
+      />
+    </app-form-field>
+  </div>
+
+  <app-form-field
+    label="E-mail"
+    [control]="form.controls.email"
+    forId="email"
+    hint="Usaremos este e-mail para o seu acesso."
+  >
+    <input
+      id="email"
+      type="email"
+      formControlName="email"
+      autocomplete="email"
+      placeholder="voce@exemplo.com"
+    />
+  </app-form-field>
+
+  <app-form-field label="Senha" [control]="form.controls.password" forId="password">
+    <input
+      id="password"
+      type="password"
+      formControlName="password"
+      autocomplete="new-password"
+      placeholder="Crie uma senha"
+    />
+  </app-form-field>
+  <app-password-rules [control]="form.controls.password" />
+
+  <app-form-field
+    label="Confirmar senha"
+    [control]="form.controls.confirmPassword"
+    forId="confirmPassword"
+  >
+    <input
+      id="confirmPassword"
+      type="password"
+      formControlName="confirmPassword"
+      autocomplete="new-password"
+      placeholder="Repita a senha"
+    />
+  </app-form-field>
+
+  <button class="btn btn--primary btn--block" type="submit" [disabled]="submitting()">
+    {{ submitting() ? 'Criando conta...' : 'Criar conta' }}
+  </button>
+</form>
+
+<p class="auth-page__footer">Já tem conta? <a routerLink="/auth/login">Entrar</a></p>

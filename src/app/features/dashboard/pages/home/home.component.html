@@ -1,0 +1,14 @@
+<header class="topbar">
+  <div class="topbar__brand">🌱 Meu Gestor Rural</div>
+  <div class="topbar__actions">
+    @if (auth.user(); as user) {
+      <span class="topbar__user">Olá, {{ user.firstName }}</span>
+    }
+    <button class="btn btn--outline" type="button" (click)="logout()">Sair</button>
+  </div>
+</header>
+
+<main class="home">
+  <h1>Bem-vindo ao Meu Gestor Rural</h1>
+  <p>Você está autenticado. Esta é a área protegida do sistema.</p>
+</main>
