@@ -14,9 +14,8 @@ export class ForgotPasswordComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly auth = inject(AuthService);
 
-  readonly loading = signal(false);
+  readonly submitting = signal(false);
   readonly sent = signal(false);
-  readonly error = signal<string | null>(null);
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -28,18 +27,14 @@ export class ForgotPasswordComponent {
       return;
     }
 
-    this.loading.set(true);
-    this.error.set(null);
+    this.submitting.set(true);
 
     this.auth.forgotPassword(this.form.getRawValue()).subscribe({
       next: () => {
-        this.loading.set(false);
+        this.submitting.set(false);
         this.sent.set(true);
       },
-      error: () => {
-        this.loading.set(false);
-        this.error.set('Não foi possível enviar o e-mail. Tente novamente.');
-      },
+      error: () => this.submitting.set(false),
     });
   }
 }

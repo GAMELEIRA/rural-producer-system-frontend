@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../core/notifications/notification.service';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 import {
   passwordMatchValidator,
@@ -19,9 +19,9 @@ export class RegisterComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly notifications = inject(NotificationService);
 
-  readonly loading = signal(false);
-  readonly error = signal<string | null>(null);
+  readonly submitting = signal(false);
 
   readonly form = this.fb.group(
     {
@@ -40,21 +40,16 @@ export class RegisterComponent {
       return;
     }
 
-    this.loading.set(true);
-    this.error.set(null);
+    this.submitting.set(true);
 
     const { confirmPassword: _confirm, ...payload } = this.form.getRawValue();
 
     this.auth.register(payload).subscribe({
-      next: () => void this.router.navigate(['/auth/login'], { queryParams: { registered: 1 } }),
-      error: (err: HttpErrorResponse) => {
-        this.loading.set(false);
-        this.error.set(
-          err.status === 409
-            ? 'Já existe uma conta com este e-mail.'
-            : 'Não foi possível criar sua conta. Tente novamente.',
-        );
+      next: () => {
+        this.notifications.success('Conta criada com sucesso!');
+        void this.router.navigate(['/auth/login'], { queryParams: { registered: 1 } });
       },
+      error: () => this.submitting.set(false),
     });
   }
 }

@@ -32,12 +32,8 @@
     <a routerLink="/auth/forgot-password">Esqueci minha senha</a>
   </div>
 
-  @if (error()) {
-    <div class="auth-page__alert auth-page__alert--error" role="alert">{{ error() }}</div>
-  }
-
-  <button class="btn btn--primary btn--block" type="submit" [disabled]="loading()">
-    {{ loading() ? 'Entrando...' : 'Entrar' }}
+  <button class="btn btn--primary btn--block" type="submit" [disabled]="submitting()">
+    {{ submitting() ? 'Entrando...' : 'Entrar' }}
   </button>
 </form>
 

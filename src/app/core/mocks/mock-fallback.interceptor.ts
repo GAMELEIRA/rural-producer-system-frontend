@@ -12,29 +12,43 @@ import { API_ENDPOINTS } from '../config/api.config';
 import { LoginRequest, LoginResponse, RegisterRequest } from '../models/user.model';
 import { MockAuthStore } from './mock-auth.store';
 
-const MOCK_LATENCY_MS = 300;
+const MOCK_LATENCY_MS = 400;
+
+/** Erros que indicam "API indisponível" e habilitam o fallback. */
+const UNAVAILABLE_STATUSES = new Set([0, 404, 502, 503, 504]);
 
 /**
- * Se a API real não responder (erro de rede, status 0), atende a requisição
- * com mocks locais. Habilitado por `environment.useMockFallback`.
+ * Atende requisições com mocks locais quando a API real não está disponível
+ * (ou sempre, conforme `environment.mockMode`).
  */
 export const mockFallbackInterceptor: HttpInterceptorFn = (req, next) => {
-  if (!environment.useMockFallback) return next(req);
+  const mode = environment.mockMode;
+  if (mode === 'off') return next(req);
 
   const store = inject(MockAuthStore);
 
+  if (mode === 'always') {
+    const mocked = handleMock(req, store);
+    return mocked ? respond(req, mocked) : next(req);
+  }
+
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status !== 0) return throwError(() => error);
+      if (!UNAVAILABLE_STATUSES.has(error.status)) return throwError(() => error);
 
       const mocked = handleMock(req, store);
-      if (!mocked) return throwError(() => error);
-
-      console.warn(`[mock] API indisponível, respondendo ${req.method} ${req.url} com mock.`);
-      return mocked.pipe(delay(MOCK_LATENCY_MS));
+      return mocked ? respond(req, mocked) : throwError(() => error);
     }),
   );
 };
+
+function respond(
+  req: HttpRequest<unknown>,
+  mocked: Observable<HttpEvent<unknown>>,
+): Observable<HttpEvent<unknown>> {
+  console.warn(`[mock] respondendo ${req.method} ${req.url} com mock local.`);
+  return mocked.pipe(delay(MOCK_LATENCY_MS));
+}
 
 function handleMock(
   req: HttpRequest<unknown>,
@@ -54,16 +68,13 @@ function handleMock(
   }
 }
 
+function mockError(status: number, message: string): Observable<never> {
+  return throwError(() => new HttpErrorResponse({ status, error: { message } }));
+}
+
 function mockRegister(body: RegisterRequest, store: MockAuthStore): Observable<HttpEvent<unknown>> {
   if (store.findByEmail(body.email)) {
-    return throwError(
-      () =>
-        new HttpErrorResponse({
-          status: 409,
-          statusText: 'Conflict',
-          error: { message: 'E-mail já cadastrado' },
-        }),
-    );
+    return mockError(409, 'Já existe uma conta com este e-mail.');
   }
   return of(new HttpResponse({ status: 201, body: store.create(body) }));
 }
@@ -71,14 +82,7 @@ function mockRegister(body: RegisterRequest, store: MockAuthStore): Observable<H
 function mockLogin(body: LoginRequest, store: MockAuthStore): Observable<HttpEvent<unknown>> {
   const user = store.findByEmail(body.email);
   if (!user || user.password !== body.password) {
-    return throwError(
-      () =>
-        new HttpErrorResponse({
-          status: 401,
-          statusText: 'Unauthorized',
-          error: { message: 'Credenciais inválidas' },
-        }),
-    );
+    return mockError(401, 'E-mail ou senha inválidos.');
   }
   const response: LoginResponse = {
     token: `mock-token.${btoa(user.email)}.${Date.now()}`,
