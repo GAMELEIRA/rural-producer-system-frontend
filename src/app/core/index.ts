@@ -8,3 +8,7 @@ export * from './loading/loading.interceptor';
 export * from './notifications/notification.service';
 export * from './models/user.model';
 export * from './config/api.config';
+export * from './notifications/confirm.service';
+export * from './models/cadastros.model';
+export * from './cadastros/crud-api.service';
+export * from './cadastros/cadastros.services';

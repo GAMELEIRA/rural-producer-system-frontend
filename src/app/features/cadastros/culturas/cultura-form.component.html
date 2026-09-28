@@ -1,0 +1,69 @@
+<div class="page-header">
+  <div>
+    <h1>{{ isEdit() ? 'Editar cultura' : 'Nova cultura' }}</h1>
+    <p>Campos com <span class="required-mark">*</span> são obrigatórios.</p>
+  </div>
+</div>
+
+<form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="form-grid">
+    <app-form-field label="Nome" [control]="form.controls.nome" forId="nome">
+      <input id="nome" type="text" formControlName="nome" placeholder="Ex.: Milho" />
+    </app-form-field>
+
+    <app-form-field label="Tipo" [control]="form.controls.tipo" forId="tipo">
+      <select id="tipo" formControlName="tipo">
+        <option value="" disabled>Selecione...</option>
+        @for (tipo of tipos; track tipo) {
+          <option [value]="tipo">{{ tipo }}</option>
+        }
+      </select>
+    </app-form-field>
+
+    <app-form-field
+      label="Ciclo estimado"
+      [control]="form.controls.cicloEstimado"
+      forId="cicloEstimado"
+      hint="Tempo médio do plantio até a colheita."
+    >
+      <input
+        id="cicloEstimado"
+        type="number"
+        min="1"
+        step="1"
+        formControlName="cicloEstimado"
+        placeholder="Ex.: 120"
+      />
+    </app-form-field>
+
+    <app-form-field
+      label="Unidade do ciclo"
+      [control]="form.controls.unidadeCiclo"
+      forId="unidadeCiclo"
+    >
+      <select id="unidadeCiclo" formControlName="unidadeCiclo">
+        @for (unidade of unidades; track unidade) {
+          <option [value]="unidade">{{ unidade }}</option>
+        }
+      </select>
+    </app-form-field>
+
+    <div class="form-grid__full">
+      <app-form-field label="Observações" [control]="form.controls.observacoes" forId="observacoes">
+        <textarea
+          id="observacoes"
+          formControlName="observacoes"
+          rows="3"
+          placeholder="Informações adicionais (opcional)"
+        ></textarea>
+      </app-form-field>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn--ghost" type="button" (click)="cancel()">Cancelar</button>
+    <button class="btn btn--primary" type="submit">
+      {{ isEdit() ? 'Salvar alterações' : 'Cadastrar' }}
+    </button>
+  </div>
+</form>

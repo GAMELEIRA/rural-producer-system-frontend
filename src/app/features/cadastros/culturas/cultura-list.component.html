@@ -1,0 +1,64 @@
+<div class="page-header">
+  <div>
+    <h1>Culturas</h1>
+    <p>Tipos de cultura cultivados na propriedade. Base para o registro das plantações.</p>
+  </div>
+  <a class="btn btn--primary" routerLink="novo">+ Nova cultura</a>
+</div>
+
+@if (loaded()) {
+  @if (failed()) {
+    <div class="card">
+      <app-empty-state
+        icon="⚠️"
+        title="Não foi possível carregar as culturas"
+        message="Verifique a conexão com o servidor e tente novamente."
+      >
+        <button class="btn btn--outline" type="button" (click)="load()">Tentar novamente</button>
+      </app-empty-state>
+    </div>
+  } @else if (items().length === 0) {
+    <div class="card">
+      <app-empty-state
+        title="Nenhuma cultura cadastrada"
+        message="Cadastre a primeira cultura (ex.: milho, soja, tomate) para começar."
+      >
+        <a class="btn btn--primary" routerLink="novo">Cadastrar cultura</a>
+      </app-empty-state>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th class="table__num">Ciclo estimado</th>
+            <th>Observações</th>
+            <th><span class="sr-only">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track item.idCultura) {
+            <tr>
+              <td>
+                <strong>{{ item.nome }}</strong>
+              </td>
+              <td>{{ item.tipo }}</td>
+              <td class="table__num">{{ item.cicloEstimado }} {{ item.unidadeCiclo }}</td>
+              <td class="table__muted">{{ item.observacoes || '—' }}</td>
+              <td>
+                <div class="table__actions">
+                  <a class="btn btn--outline btn--sm" [routerLink]="[item.idCultura]">Editar</a>
+                  <button class="btn btn--danger btn--sm" type="button" (click)="remove(item)">
+                    Excluir
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

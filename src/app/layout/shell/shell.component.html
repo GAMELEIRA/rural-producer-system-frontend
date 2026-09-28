@@ -1,0 +1,55 @@
+<div class="shell" [class.shell--sidebar-open]="sidebarOpen()">
+  <aside class="sidebar">
+    <a class="sidebar__brand" routerLink="/" (click)="closeSidebar()">
+      <span aria-hidden="true">🌱</span> Meu Gestor Rural
+    </a>
+
+    <nav class="sidebar__nav" aria-label="Menu principal">
+      @for (section of menu; track section.title) {
+        @if (section.title) {
+          <p class="sidebar__section">{{ section.title }}</p>
+        }
+        @for (item of section.items; track item.label) {
+          @if (item.route) {
+            <a
+              class="sidebar__link"
+              [routerLink]="item.route"
+              routerLinkActive="sidebar__link--active"
+              [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+              (click)="closeSidebar()"
+            >
+              <span class="sidebar__icon" aria-hidden="true">{{ item.icon }}</span>
+              {{ item.label }}
+            </a>
+          } @else {
+            <span class="sidebar__link sidebar__link--disabled" aria-disabled="true">
+              <span class="sidebar__icon" aria-hidden="true">{{ item.icon }}</span>
+              {{ item.label }}
+              <span class="sidebar__badge">em breve</span>
+            </span>
+          }
+        }
+      }
+    </nav>
+  </aside>
+
+  <div class="sidebar__backdrop" (click)="closeSidebar()"></div>
+
+  <div class="shell__main">
+    <header class="topbar">
+      <button class="topbar__menu" type="button" aria-label="Abrir menu" (click)="toggleSidebar()">
+        ☰
+      </button>
+      <div class="topbar__actions">
+        @if (auth.user(); as user) {
+          <span class="topbar__user">Olá, {{ user.firstName }}</span>
+        }
+        <button class="btn btn--outline btn--sm" type="button" (click)="logout()">Sair</button>
+      </div>
+    </header>
+
+    <main class="shell__content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

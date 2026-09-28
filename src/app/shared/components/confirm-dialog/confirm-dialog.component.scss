@@ -1,0 +1,49 @@
+.confirm__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.confirm {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1060;
+  width: min(26rem, calc(100vw - 2rem));
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+  transform: translate(-50%, -50%);
+  animation: confirm-in 0.15s ease-out;
+
+  &__title {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    color: var(--color-text);
+  }
+
+  &__message {
+    margin: 0 0 1.25rem;
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}
+
+@keyframes confirm-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}

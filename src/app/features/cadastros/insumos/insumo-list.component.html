@@ -1,0 +1,71 @@
+<div class="page-header">
+  <div>
+    <h1>Insumos</h1>
+    <p>Sementes, fertilizantes e defensivos com acompanhamento do estoque inicial.</p>
+  </div>
+  <a class="btn btn--primary" routerLink="novo">+ Novo insumo</a>
+</div>
+
+@if (loaded()) {
+  @if (failed()) {
+    <div class="card">
+      <app-empty-state
+        icon="⚠️"
+        title="Não foi possível carregar os insumos"
+        message="Verifique a conexão com o servidor e tente novamente."
+      >
+        <button class="btn btn--outline" type="button" (click)="load()">Tentar novamente</button>
+      </app-empty-state>
+    </div>
+  } @else if (items().length === 0) {
+    <div class="card">
+      <app-empty-state
+        icon="🧪"
+        title="Nenhum insumo cadastrado"
+        message="Cadastre sementes, fertilizantes e outros insumos para controlar o estoque."
+      >
+        <a class="btn btn--primary" routerLink="novo">Cadastrar insumo</a>
+      </app-empty-state>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th class="table__num">Estoque</th>
+            <th class="table__num">Preço unitário</th>
+            <th class="table__num">Valor em estoque</th>
+            <th><span class="sr-only">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track item.idInsumo) {
+            <tr>
+              <td>
+                <strong>{{ item.nome }}</strong>
+              </td>
+              <td>{{ item.tipo }}</td>
+              <td class="table__num" [class.table__warn]="item.quantidadeEstoque <= 0">
+                {{ item.quantidadeEstoque | number: '1.0-2' }} {{ item.unidadeMedida }}
+              </td>
+              <td class="table__num">{{ item.precoUnitario | currency: 'BRL' }}</td>
+              <td class="table__num">
+                {{ item.quantidadeEstoque * item.precoUnitario | currency: 'BRL' }}
+              </td>
+              <td>
+                <div class="table__actions">
+                  <a class="btn btn--outline btn--sm" [routerLink]="[item.idInsumo]">Editar</a>
+                  <button class="btn btn--danger btn--sm" type="button" (click)="remove(item)">
+                    Excluir
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

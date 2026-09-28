@@ -16,11 +16,25 @@ import {
   TokenJwtDto,
 } from '../auth/auth-api.dto';
 import { MockAuthStore } from './mock-auth.store';
+import { MockCollectionStore } from './mock-collection.store';
 
 const MOCK_LATENCY_MS = 400;
 
 /** Erros que indicam "API indisponível" e habilitam o fallback. */
 const UNAVAILABLE_STATUSES = new Set([0, 404, 502, 503, 504]);
+
+/** Recursos CRUD simulados: URL base -> nome da coleção e campo de id. */
+const CRUD_RESOURCES: Record<string, { resource: string; idField: string }> = {
+  [API_ENDPOINTS.culturas]: { resource: 'culturas', idField: 'idCultura' },
+  [API_ENDPOINTS.talhoes]: { resource: 'talhoes', idField: 'idTalhao' },
+  [API_ENDPOINTS.insumos]: { resource: 'insumos', idField: 'idInsumo' },
+  [API_ENDPOINTS.produtos]: { resource: 'produtos', idField: 'idProduto' },
+};
+
+interface MockStores {
+  auth: MockAuthStore;
+  collections: MockCollectionStore;
+}
 
 /**
  * Atende requisições com mocks locais quando a API real não está disponível
@@ -30,10 +44,13 @@ export const mockFallbackInterceptor: HttpInterceptorFn = (req, next) => {
   const mode = environment.mockMode;
   if (mode === 'off') return next(req);
 
-  const store = inject(MockAuthStore);
+  const stores: MockStores = {
+    auth: inject(MockAuthStore),
+    collections: inject(MockCollectionStore),
+  };
 
   if (mode === 'always') {
-    const mocked = handleMock(req, store);
+    const mocked = handleMock(req, stores);
     return mocked ? respond(req, mocked) : next(req);
   }
 
@@ -41,7 +58,7 @@ export const mockFallbackInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       if (!UNAVAILABLE_STATUSES.has(error.status)) return throwError(() => error);
 
-      const mocked = handleMock(req, store);
+      const mocked = handleMock(req, stores);
       return mocked ? respond(req, mocked) : throwError(() => error);
     }),
   );
@@ -57,20 +74,56 @@ function respond(
 
 function handleMock(
   req: HttpRequest<unknown>,
-  store: MockAuthStore,
+  stores: MockStores,
 ): Observable<HttpEvent<unknown>> | null {
-  if (req.method !== 'POST') return null;
-
-  switch (req.url) {
-    case API_ENDPOINTS.register:
-      return mockRegister(req.body as CadastroUsuarioDto, store);
-    case API_ENDPOINTS.login:
-      return mockLogin(req.body as AutenticacaoDto, store);
-    case API_ENDPOINTS.forgotPassword:
-      return of(new HttpResponse({ status: 204 }));
-    default:
-      return null;
+  if (req.method === 'POST') {
+    switch (req.url) {
+      case API_ENDPOINTS.register:
+        return mockRegister(req.body as CadastroUsuarioDto, stores.auth);
+      case API_ENDPOINTS.login:
+        return mockLogin(req.body as AutenticacaoDto, stores.auth);
+      case API_ENDPOINTS.forgotPassword:
+        return of(new HttpResponse({ status: 204 }));
+    }
   }
+
+  return mockCrud(req, stores.collections);
+}
+
+/** Simula GET/POST/PUT/DELETE em `/recurso` e `/recurso/{id}`. */
+function mockCrud(
+  req: HttpRequest<unknown>,
+  store: MockCollectionStore,
+): Observable<HttpEvent<unknown>> | null {
+  const match = /^(.*?)(?:\/(\d+))?$/.exec(req.url);
+  if (!match) return null;
+
+  const config = CRUD_RESOURCES[match[1]];
+  if (!config) return null;
+
+  const { resource, idField } = config;
+  const id = match[2] !== undefined ? Number(match[2]) : null;
+  const body = req.body as Record<string, unknown>;
+  const notFound = () => mockError(404, 'Registro nao encontrado');
+
+  if (req.method === 'GET' && id === null) {
+    return of(new HttpResponse({ status: 200, body: store.list(resource) }));
+  }
+  if (req.method === 'GET' && id !== null) {
+    const item = store.find(resource, idField, id);
+    return item ? of(new HttpResponse({ status: 200, body: item })) : notFound();
+  }
+  if (req.method === 'POST' && id === null) {
+    return of(new HttpResponse({ status: 201, body: store.create(resource, idField, body) }));
+  }
+  if (req.method === 'PUT' && id !== null) {
+    const item = store.update(resource, idField, id, body);
+    return item ? of(new HttpResponse({ status: 200, body: item })) : notFound();
+  }
+  if (req.method === 'DELETE' && id !== null) {
+    return store.remove(resource, idField, id) ? of(new HttpResponse({ status: 204 })) : notFound();
+  }
+  return null;
 }
 
 function mockError(status: number, message: string): Observable<never> {

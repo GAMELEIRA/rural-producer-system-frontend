@@ -1,0 +1,28 @@
+@if (confirm.current(); as dialog) {
+  <div class="confirm__backdrop" (click)="confirm.answer(false)"></div>
+  <div
+    class="confirm"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="confirm-title"
+    aria-describedby="confirm-message"
+  >
+    <h2 id="confirm-title" class="confirm__title">{{ dialog.title }}</h2>
+    <p id="confirm-message" class="confirm__message">{{ dialog.message }}</p>
+    <div class="confirm__actions">
+      <button class="btn btn--ghost" type="button" (click)="confirm.answer(false)">
+        {{ dialog.cancelLabel ?? 'Cancelar' }}
+      </button>
+      <button
+        class="btn"
+        [class.btn--danger]="dialog.danger"
+        [class.btn--primary]="!dialog.danger"
+        type="button"
+        autofocus
+        (click)="confirm.answer(true)"
+      >
+        {{ dialog.confirmLabel ?? 'Confirmar' }}
+      </button>
+    </div>
+  </div>
+}

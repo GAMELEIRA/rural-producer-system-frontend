@@ -44,7 +44,9 @@ a {
   }
 }
 
-input {
+input,
+select,
+textarea {
   width: 100%;
   padding: 0.65rem 0.85rem;
   border: 1px solid var(--color-border);
@@ -61,6 +63,11 @@ input {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.18);
   }
+}
+
+textarea {
+  min-height: 5rem;
+  resize: vertical;
 }
 
 .btn {
@@ -104,4 +111,145 @@ input {
       background: var(--color-primary-light);
     }
   }
+
+  &--danger {
+    background: var(--color-danger);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: #a51f1f;
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: var(--color-text-muted);
+
+    &:hover:not(:disabled) {
+      background: var(--color-primary-light);
+      color: var(--color-primary-dark);
+    }
+  }
+
+  &--sm {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Cabeçalho e tabela padrão das páginas de cadastro */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--color-primary-dark);
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  th {
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  tbody tr:hover {
+    background: #f8fbf8;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+
+  &__num {
+    text-align: right;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0 1rem;
+
+  .form-grid__full {
+    grid-column: 1 / -1;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.required-mark {
+  color: var(--color-danger);
+}
+
+.table__muted {
+  color: var(--color-text-muted);
+  white-space: normal;
+  max-width: 20rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.table__warn {
+  color: var(--color-danger);
+  font-weight: 600;
 }

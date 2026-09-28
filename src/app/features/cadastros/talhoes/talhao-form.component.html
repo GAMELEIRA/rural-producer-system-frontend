@@ -1,0 +1,73 @@
+<div class="page-header">
+  <div>
+    <h1>{{ isEdit() ? 'Editar talhão' : 'Novo talhão' }}</h1>
+    <p>Campos com <span class="required-mark">*</span> são obrigatórios.</p>
+  </div>
+</div>
+
+<form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="form-grid">
+    <div class="form-grid__full">
+      <app-form-field label="Nome" [control]="form.controls.nome" forId="nome">
+        <input id="nome" type="text" formControlName="nome" placeholder="Ex.: Talhão 1 - Baixada" />
+      </app-form-field>
+    </div>
+
+    <app-form-field label="Área" [control]="form.controls.area" forId="area">
+      <input
+        id="area"
+        type="number"
+        min="0.01"
+        step="0.01"
+        formControlName="area"
+        placeholder="Ex.: 2,5"
+      />
+    </app-form-field>
+
+    <app-form-field
+      label="Unidade da área"
+      [control]="form.controls.unidadeArea"
+      forId="unidadeArea"
+    >
+      <select id="unidadeArea" formControlName="unidadeArea">
+        @for (unidade of unidades; track unidade) {
+          <option [value]="unidade">{{ unidade }}</option>
+        }
+      </select>
+    </app-form-field>
+
+    <div class="form-grid__full">
+      <app-form-field
+        label="Localização"
+        [control]="form.controls.localizacao"
+        forId="localizacao"
+        hint="Referência dentro da propriedade ou coordenadas."
+      >
+        <input
+          id="localizacao"
+          type="text"
+          formControlName="localizacao"
+          placeholder="Ex.: Ao lado do açude, lado norte"
+        />
+      </app-form-field>
+    </div>
+
+    <div class="form-grid__full">
+      <app-form-field label="Observações" [control]="form.controls.observacoes" forId="observacoes">
+        <textarea
+          id="observacoes"
+          formControlName="observacoes"
+          rows="3"
+          placeholder="Tipo de solo, irrigação, etc. (opcional)"
+        ></textarea>
+      </app-form-field>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn--ghost" type="button" (click)="cancel()">Cancelar</button>
+    <button class="btn btn--primary" type="submit">
+      {{ isEdit() ? 'Salvar alterações' : 'Cadastrar' }}
+    </button>
+  </div>
+</form>

@@ -1,0 +1,67 @@
+<div class="page-header">
+  <div>
+    <h1>Produtos</h1>
+    <p>Produtos colhidos disponíveis para venda e controle de estoque.</p>
+  </div>
+  <a class="btn btn--primary" routerLink="novo">+ Novo produto</a>
+</div>
+
+@if (loaded()) {
+  @if (failed()) {
+    <div class="card">
+      <app-empty-state
+        icon="⚠️"
+        title="Não foi possível carregar os produtos"
+        message="Verifique a conexão com o servidor e tente novamente."
+      >
+        <button class="btn btn--outline" type="button" (click)="load()">Tentar novamente</button>
+      </app-empty-state>
+    </div>
+  } @else if (items().length === 0) {
+    <div class="card">
+      <app-empty-state
+        icon="📦"
+        title="Nenhum produto cadastrado"
+        message="Cadastre os produtos que você comercializa para registrar vendas."
+      >
+        <a class="btn btn--primary" routerLink="novo">Cadastrar produto</a>
+      </app-empty-state>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th class="table__num">Estoque</th>
+            <th class="table__num">Preço de venda</th>
+            <th>Observações</th>
+            <th><span class="sr-only">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track item.idProduto) {
+            <tr>
+              <td>
+                <strong>{{ item.nome }}</strong>
+              </td>
+              <td class="table__num">
+                {{ item.quantidadeEstoque | number: '1.0-2' }} {{ item.unidadeMedida }}
+              </td>
+              <td class="table__num">{{ item.precoVenda | currency: 'BRL' }}</td>
+              <td class="table__muted">{{ item.observacoes || '—' }}</td>
+              <td>
+                <div class="table__actions">
+                  <a class="btn btn--outline btn--sm" [routerLink]="[item.idProduto]">Editar</a>
+                  <button class="btn btn--danger btn--sm" type="button" (click)="remove(item)">
+                    Excluir
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}
