@@ -9,6 +9,7 @@ const MESSAGES: Record<string, (err: unknown) => string> = {
   minlength: (err) => `Mínimo de ${(err as { requiredLength: number }).requiredLength} caracteres.`,
   maxlength: (err) => `Máximo de ${(err as { requiredLength: number }).requiredLength} caracteres.`,
   pattern: () => 'Formato inválido.',
+  cpf: () => 'Informe um CPF válido (ex.: 000.000.000-00).',
   passwordStrength: () => 'A senha deve ter ao menos 8 caracteres, com letras e números.',
   passwordMismatch: () => 'As senhas não coincidem.',
 };

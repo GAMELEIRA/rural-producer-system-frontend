@@ -1,12 +1,13 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RegisterRequest, User } from '../models/user.model';
+import { CadastroUsuarioDto } from '../auth/auth-api.dto';
 
 const USERS_KEY = 'mgr.mock.users';
 
-interface MockUser extends User {
-  id: number;
-  password: string;
+/** Usuário persistido pelo mock, no mesmo formato dos DTOs do backend. */
+export interface MockUser extends CadastroUsuarioDto {
+  idUsuario: number;
+  dataCadastro: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -17,17 +18,16 @@ export class MockAuthStore {
     return this.load().find((u) => u.email.toLowerCase() === email.toLowerCase());
   }
 
-  create(payload: RegisterRequest): User {
+  create(payload: CadastroUsuarioDto): MockUser {
     const users = this.load();
-    const user: MockUser = { id: Date.now(), ...payload };
+    const user: MockUser = {
+      idUsuario: Date.now(),
+      dataCadastro: new Date().toISOString(),
+      ...payload,
+    };
     users.push(user);
     this.save(users);
-    return this.toPublic(user);
-  }
-
-  toPublic(user: MockUser): User {
-    const { password: _password, ...publicUser } = user;
-    return publicUser;
+    return user;
   }
 
   private load(): MockUser[] {

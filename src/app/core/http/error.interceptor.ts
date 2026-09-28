@@ -17,11 +17,39 @@ const STATUS_MESSAGES: Record<number, string> = {
   504: 'O servidor demorou para responder. Tente novamente.',
 };
 
+interface ApiErrorBody {
+  mensagem?: unknown;
+  message?: unknown;
+}
+
+interface ApiFieldError {
+  campo?: unknown;
+  mensagem?: unknown;
+}
+
+const nonEmpty = (value: unknown): value is string =>
+  typeof value === 'string' && value.trim().length > 0;
+
+/**
+ * Extrai a mensagem do corpo de erro do backend:
+ * - `{ mensagem }` (regra de negócio, 401, 404, 500) ou `{ message }`;
+ * - `[{ campo, mensagem }]` (erros de validação do @Valid).
+ * Cai no mapa por status quando o corpo não traz mensagem.
+ */
 export function getErrorMessage(error: HttpErrorResponse): string {
-  const body = error.error as { message?: unknown } | null | undefined;
-  if (body && typeof body.message === 'string' && body.message.trim()) {
-    return body.message;
+  const body: unknown = error.error;
+
+  if (Array.isArray(body)) {
+    const messages = (body as ApiFieldError[])
+      .map((e) => (nonEmpty(e.mensagem) ? e.mensagem : null))
+      .filter((m): m is string => m !== null);
+    if (messages.length) return messages.join(' ');
+  } else if (body && typeof body === 'object') {
+    const { mensagem, message } = body as ApiErrorBody;
+    if (nonEmpty(mensagem)) return mensagem;
+    if (nonEmpty(message)) return message;
   }
+
   return STATUS_MESSAGES[error.status] ?? 'Ocorreu um erro inesperado. Tente novamente.';
 }
 
