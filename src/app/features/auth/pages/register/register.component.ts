@@ -5,6 +5,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/notifications/notification.service';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 import { PasswordRulesComponent } from '../../../../shared/components/password-rules/password-rules.component';
+import { cpfValidator } from '../../../../shared/validators/cpf.validators';
 import {
   passwordMatchValidator,
   passwordStrengthValidator,
@@ -29,6 +30,8 @@ export class RegisterComponent {
       firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(60)]],
       lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(60)]],
       email: ['', [Validators.required, Validators.email]],
+      cpf: ['', [Validators.required, cpfValidator]],
+      phone: ['', [Validators.maxLength(20)]],
       password: ['', [Validators.required, passwordStrengthValidator]],
       confirmPassword: ['', [Validators.required]],
     },
