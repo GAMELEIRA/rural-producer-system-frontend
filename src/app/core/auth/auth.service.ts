@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { API_ENDPOINTS } from '../config/api.config';
 import {
   ForgotPasswordRequest,
@@ -11,6 +11,14 @@ import {
   User,
 } from '../models/user.model';
 import { TokenStorageService } from './token-storage.service';
+import {
+  DetalhamentoUsuarioDto,
+  TokenJwtDto,
+  fromDetalhamentoDto,
+  fromTokenJwtDto,
+  toAutenticacaoDto,
+  toCadastroDto,
+} from './auth-api.dto';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -26,13 +34,16 @@ export class AuthService {
   readonly isLoggedIn = computed(() => !!this.tokenSignal());
 
   login(payload: LoginRequest): Observable<LoginResponse> {
-    return this.http
-      .post<LoginResponse>(API_ENDPOINTS.login, payload)
-      .pipe(tap((res) => this.setSession(res)));
+    return this.http.post<TokenJwtDto>(API_ENDPOINTS.login, toAutenticacaoDto(payload)).pipe(
+      map(fromTokenJwtDto),
+      tap((res) => this.setSession(res)),
+    );
   }
 
   register(payload: RegisterRequest): Observable<User> {
-    return this.http.post<User>(API_ENDPOINTS.register, payload);
+    return this.http
+      .post<DetalhamentoUsuarioDto>(API_ENDPOINTS.register, toCadastroDto(payload))
+      .pipe(map(fromDetalhamentoDto));
   }
 
   forgotPassword(payload: ForgotPasswordRequest): Observable<void> {

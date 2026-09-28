@@ -42,6 +42,29 @@
     />
   </app-form-field>
 
+  <div class="auth-page__row">
+    <app-form-field label="CPF" [control]="form.controls.cpf" forId="cpf">
+      <input
+        id="cpf"
+        type="text"
+        inputmode="numeric"
+        formControlName="cpf"
+        autocomplete="off"
+        placeholder="000.000.000-00"
+      />
+    </app-form-field>
+
+    <app-form-field label="Telefone" [control]="form.controls.phone" forId="phone">
+      <input
+        id="phone"
+        type="tel"
+        formControlName="phone"
+        autocomplete="tel"
+        placeholder="(11) 99999-9999"
+      />
+    </app-form-field>
+  </div>
+
   <app-form-field label="Senha" [control]="form.controls.password" forId="password">
     <input
       id="password"

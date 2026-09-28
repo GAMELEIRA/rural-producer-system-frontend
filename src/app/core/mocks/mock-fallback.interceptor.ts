@@ -9,7 +9,12 @@ import { inject } from '@angular/core';
 import { Observable, catchError, delay, of, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { API_ENDPOINTS } from '../config/api.config';
-import { LoginRequest, LoginResponse, RegisterRequest } from '../models/user.model';
+import {
+  AutenticacaoDto,
+  CadastroUsuarioDto,
+  DetalhamentoUsuarioDto,
+  TokenJwtDto,
+} from '../auth/auth-api.dto';
 import { MockAuthStore } from './mock-auth.store';
 
 const MOCK_LATENCY_MS = 400;
@@ -58,9 +63,9 @@ function handleMock(
 
   switch (req.url) {
     case API_ENDPOINTS.register:
-      return mockRegister(req.body as RegisterRequest, store);
+      return mockRegister(req.body as CadastroUsuarioDto, store);
     case API_ENDPOINTS.login:
-      return mockLogin(req.body as LoginRequest, store);
+      return mockLogin(req.body as AutenticacaoDto, store);
     case API_ENDPOINTS.forgotPassword:
       return of(new HttpResponse({ status: 204 }));
     default:
@@ -69,24 +74,42 @@ function handleMock(
 }
 
 function mockError(status: number, message: string): Observable<never> {
-  return throwError(() => new HttpErrorResponse({ status, error: { message } }));
+  // Mesmo formato de erro do backend (TratadorDeErros): { mensagem }
+  return throwError(() => new HttpErrorResponse({ status, error: { mensagem: message } }));
 }
 
-function mockRegister(body: RegisterRequest, store: MockAuthStore): Observable<HttpEvent<unknown>> {
+function mockRegister(
+  body: CadastroUsuarioDto,
+  store: MockAuthStore,
+): Observable<HttpEvent<unknown>> {
   if (store.findByEmail(body.email)) {
-    return mockError(409, 'Já existe uma conta com este e-mail.');
+    return mockError(400, 'Ja existe um usuario cadastrado com este e-mail!');
   }
-  return of(new HttpResponse({ status: 201, body: store.create(body) }));
+  const user = store.create(body);
+  const response: DetalhamentoUsuarioDto = {
+    idUsuario: user.idUsuario,
+    nome: user.nome,
+    sobrenome: user.sobrenome,
+    email: user.email,
+    cpf: user.cpf,
+    telefone: user.telefone,
+    dataCadastro: user.dataCadastro,
+    ativo: true,
+  };
+  return of(new HttpResponse({ status: 201, body: response }));
 }
 
-function mockLogin(body: LoginRequest, store: MockAuthStore): Observable<HttpEvent<unknown>> {
+function mockLogin(body: AutenticacaoDto, store: MockAuthStore): Observable<HttpEvent<unknown>> {
   const user = store.findByEmail(body.email);
-  if (!user || user.password !== body.password) {
-    return mockError(401, 'E-mail ou senha inválidos.');
+  if (!user || user.senha !== body.senha) {
+    return mockError(401, 'Credenciais invalidas (e-mail ou senha incorretos)');
   }
-  const response: LoginResponse = {
+  const response: TokenJwtDto = {
     token: `mock-token.${btoa(user.email)}.${Date.now()}`,
-    user: store.toPublic(user),
+    tipo: 'Bearer',
+    idUsuario: user.idUsuario,
+    nome: user.nome,
+    email: user.email,
   };
   return of(new HttpResponse({ status: 200, body: response }));
 }
