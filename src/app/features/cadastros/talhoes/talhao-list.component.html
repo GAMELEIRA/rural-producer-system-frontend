@@ -1,0 +1,65 @@
+<div class="page-header">
+  <div>
+    <h1>Talhões</h1>
+    <p>Áreas físicas de cultivo da propriedade, onde as plantações serão realizadas.</p>
+  </div>
+  <a class="btn btn--primary" routerLink="novo">+ Novo talhão</a>
+</div>
+
+@if (loaded()) {
+  @if (failed()) {
+    <div class="card">
+      <app-empty-state
+        icon="⚠️"
+        title="Não foi possível carregar os talhões"
+        message="Verifique a conexão com o servidor e tente novamente."
+      >
+        <button class="btn btn--outline" type="button" (click)="load()">Tentar novamente</button>
+      </app-empty-state>
+    </div>
+  } @else if (items().length === 0) {
+    <div class="card">
+      <app-empty-state
+        icon="🗺️"
+        title="Nenhum talhão cadastrado"
+        message="Cadastre as áreas de cultivo da sua propriedade para começar."
+      >
+        <a class="btn btn--primary" routerLink="novo">Cadastrar talhão</a>
+      </app-empty-state>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th class="table__num">Área</th>
+            <th>Localização</th>
+            <th>Observações</th>
+            <th><span class="sr-only">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track item.idTalhao) {
+            <tr>
+              <td>
+                <strong>{{ item.nome }}</strong>
+              </td>
+              <td class="table__num">{{ item.area | number: '1.0-2' }} {{ item.unidadeArea }}</td>
+              <td>{{ item.localizacao }}</td>
+              <td class="table__muted">{{ item.observacoes || '—' }}</td>
+              <td>
+                <div class="table__actions">
+                  <a class="btn btn--outline btn--sm" [routerLink]="[item.idTalhao]">Editar</a>
+                  <button class="btn btn--danger btn--sm" type="button" (click)="remove(item)">
+                    Excluir
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

@@ -11,8 +11,19 @@ export const routes: Routes = [
     path: '',
     canActivate: [authGuard],
     canActivateChild: [authGuard],
-    loadChildren: () =>
-      import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
+    loadComponent: () => import('./layout/shell/shell.component').then((m) => m.ShellComponent),
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
+      },
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/cadastros/cadastros.routes').then((m) => m.CADASTROS_ROUTES),
+      },
+    ],
   },
   { path: '**', redirectTo: '' },
 ];

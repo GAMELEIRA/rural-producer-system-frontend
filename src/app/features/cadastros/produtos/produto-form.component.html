@@ -1,0 +1,75 @@
+<div class="page-header">
+  <div>
+    <h1>{{ isEdit() ? 'Editar produto' : 'Novo produto' }}</h1>
+    <p>Campos com <span class="required-mark">*</span> são obrigatórios.</p>
+  </div>
+</div>
+
+<form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="form-grid">
+    <div class="form-grid__full">
+      <app-form-field label="Nome" [control]="form.controls.nome" forId="nome">
+        <input id="nome" type="text" formControlName="nome" placeholder="Ex.: Tomate cereja" />
+      </app-form-field>
+    </div>
+
+    <app-form-field
+      label="Unidade de medida"
+      [control]="form.controls.unidadeMedida"
+      forId="unidadeMedida"
+    >
+      <select id="unidadeMedida" formControlName="unidadeMedida">
+        @for (unidade of unidades; track unidade) {
+          <option [value]="unidade">{{ unidade }}</option>
+        }
+      </select>
+    </app-form-field>
+
+    <app-form-field
+      label="Preço de venda (R$)"
+      [control]="form.controls.precoVenda"
+      forId="precoVenda"
+    >
+      <input
+        id="precoVenda"
+        type="number"
+        min="0"
+        step="0.01"
+        formControlName="precoVenda"
+        placeholder="Ex.: 12,90"
+      />
+    </app-form-field>
+
+    <app-form-field
+      [label]="isEdit() ? 'Quantidade em estoque' : 'Estoque inicial'"
+      [control]="form.controls.quantidadeEstoque"
+      forId="quantidadeEstoque"
+    >
+      <input
+        id="quantidadeEstoque"
+        type="number"
+        min="0"
+        step="0.01"
+        formControlName="quantidadeEstoque"
+      />
+    </app-form-field>
+
+    <div class="form-grid__full">
+      <app-form-field label="Observações" [control]="form.controls.observacoes" forId="observacoes">
+        <textarea
+          id="observacoes"
+          formControlName="observacoes"
+          rows="3"
+          placeholder="Informações adicionais (opcional)"
+        ></textarea>
+      </app-form-field>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn--ghost" type="button" (click)="cancel()">Cancelar</button>
+    <button class="btn btn--primary" type="submit">
+      {{ isEdit() ? 'Salvar alterações' : 'Cadastrar' }}
+    </button>
+  </div>
+</form>

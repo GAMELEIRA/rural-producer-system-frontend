@@ -1,45 +1,42 @@
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1.5rem;
-  background: var(--color-primary);
-  color: #fff;
-
-  &__brand {
-    font-weight: 700;
-    font-size: 1.1rem;
-  }
-
-  &__actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  &__user {
-    font-size: 0.9rem;
-  }
-
-  .btn--outline {
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.7);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.12);
-    }
-  }
+.shortcuts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 1rem;
 }
 
-.home {
-  padding: 2rem 1.5rem;
+.shortcut {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-decoration: none;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s,
+    border-color 0.15s;
 
-  h1 {
-    color: var(--color-primary-dark);
-    margin: 0 0 0.5rem;
+  &:hover {
+    text-decoration: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 6px 18px rgba(46, 125, 50, 0.12);
+    transform: translateY(-2px);
   }
 
-  p {
+  &__icon {
+    font-size: 1.75rem;
+  }
+
+  &__label {
+    font-weight: 700;
+    color: var(--color-primary-dark);
+  }
+
+  &__description {
+    font-size: 0.85rem;
     color: var(--color-text-muted);
   }
 }
