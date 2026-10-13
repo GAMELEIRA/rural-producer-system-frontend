@@ -28,9 +28,9 @@ export const MENU: MenuSection[] = [
   {
     title: 'Produção',
     items: [
-      { label: 'Plantações', icon: '🌾', soon: true },
+      { label: 'Plantações', icon: '🌾', route: '/plantacoes' },
       { label: 'Aplicação de insumos', icon: '💧', soon: true },
-      { label: 'Safras', icon: '📅', soon: true },
+      { label: 'Safras', icon: '📅', route: '/safras' },
       { label: 'Perdas', icon: '⚠️', soon: true },
     ],
   },
