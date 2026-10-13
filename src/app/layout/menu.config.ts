@@ -29,9 +29,10 @@ export const MENU: MenuSection[] = [
     title: 'Produção',
     items: [
       { label: 'Plantações', icon: '🌾', route: '/plantacoes' },
-      { label: 'Aplicação de insumos', icon: '💧', soon: true },
+      { label: 'Aplicação de insumos', icon: '💧', route: '/aplicacoes-insumo' },
       { label: 'Safras', icon: '📅', route: '/safras' },
-      { label: 'Perdas', icon: '⚠️', soon: true },
+      { label: 'Gastos de produção', icon: '🧾', route: '/gastos' },
+      { label: 'Perdas', icon: '⚠️', route: '/perdas' },
     ],
   },
   {
