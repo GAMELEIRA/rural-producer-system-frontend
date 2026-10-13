@@ -13,6 +13,8 @@ export const routes: Routes = [
     canActivateChild: [authGuard],
     loadComponent: () => import('./layout/shell/shell.component').then((m) => m.ShellComponent),
     children: [
+      { path: 'estoque', title: 'Estoque | Meu Gestor Rural', loadComponent: () => import('./features/comercial/estoque.component').then(m => m.EstoqueComponent) },
+      { path: 'vendas', title: 'Vendas | Meu Gestor Rural', loadComponent: () => import('./features/comercial/vendas.component').then(m => m.VendasComponent) },
       { path: 'aplicacoes-insumo', title: 'Aplicações de insumo | Meu Gestor Rural', loadComponent: () => import('./features/operacoes/aplicacoes-insumo.component').then(m => m.AplicacoesInsumoComponent) },
       { path: 'perdas', title: 'Perdas | Meu Gestor Rural', loadComponent: () => import('./features/operacoes/perdas.component').then(m => m.PerdasComponent) },
       { path: 'gastos', title: 'Gastos | Meu Gestor Rural', loadComponent: () => import('./features/operacoes/gastos.component').then(m => m.GastosComponent) },
