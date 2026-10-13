@@ -44,3 +44,9 @@
     @for (item of g.statusPlantacoes;track item.status) { <p>{{item.status}}: <strong>{{item.quantidade}}</strong></p> } @empty {<p>Não há plantações registradas.</p>}
   </section>
 }
+
+<section class="card" style="margin-top:1rem" aria-label="Gráfico de colheitas"><h2>Quantidade colhida por mês</h2>
+<p class="table__muted">Quantidade agregada conforme a unidade informada nos cultivos; compare apenas plantações de mesma unidade.</p>
+@for(item of colheitas();track item.mes){<div class="chart-line"><span>{{item.mes}}</span><div class="chart-track"><div class="chart-bar" [style.width.%]="item.quantidade/maiorColheita()*100"></div></div><strong>{{item.quantidade}}</strong></div>}
+@empty{<p>Nenhuma colheita finalizada registrada.</p>}
+</section>
