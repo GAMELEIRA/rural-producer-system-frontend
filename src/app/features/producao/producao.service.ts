@@ -16,7 +16,7 @@ export class ProducaoService {
   listarPlantacoes() { return this.http.get<Plantacao[]>(`${this.root}/plantacoes`); }
   criarPlantacao(dados: PlantacaoInput) { return this.http.post<Plantacao>(`${this.root}/plantacoes`, dados); }
   excluirPlantacao(id: number) { return this.http.delete<void>(`${this.root}/plantacoes/${id}`); }
-  finalizarColheita(id: number, dados: { dataColheita: string; quantidadeColhida: number }) {
+  finalizarColheita(id: number, dados: { dataColheita: string; quantidadeColhida: number; idProduto: number }) {
     return this.http.patch<Plantacao>(`${this.root}/plantacoes/${id}/finalizar-colheita`, dados);
   }
 }
