@@ -13,6 +13,8 @@ export const routes: Routes = [
     canActivateChild: [authGuard],
     loadComponent: () => import('./layout/shell/shell.component').then((m) => m.ShellComponent),
     children: [
+      { path: 'safras', title: 'Safras | Meu Gestor Rural', loadComponent: () => import('./features/producao/safras.component').then(m => m.SafrasComponent) },
+      { path: 'plantacoes', title: 'Plantações | Meu Gestor Rural', loadComponent: () => import('./features/producao/plantacoes.component').then(m => m.PlantacoesComponent) },
       {
         path: '',
         loadChildren: () =>
