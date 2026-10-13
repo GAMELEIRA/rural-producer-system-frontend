@@ -43,5 +43,7 @@ export class HomeComponent {
       icon: '📦',
       route: '/produtos',
     },
+    { label: 'Safras', description: 'Gerencie os períodos de produção.', icon: '📅', route: '/safras' },
+    { label: 'Plantações', description: 'Acompanhe os cultivos e registre colheitas.', icon: '🌾', route: '/plantacoes' },
   ];
 }
