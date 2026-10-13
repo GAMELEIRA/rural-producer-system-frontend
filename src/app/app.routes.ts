@@ -13,6 +13,9 @@ export const routes: Routes = [
     canActivateChild: [authGuard],
     loadComponent: () => import('./layout/shell/shell.component').then((m) => m.ShellComponent),
     children: [
+      { path: 'aplicacoes-insumo', title: 'Aplicações de insumo | Meu Gestor Rural', loadComponent: () => import('./features/operacoes/aplicacoes-insumo.component').then(m => m.AplicacoesInsumoComponent) },
+      { path: 'perdas', title: 'Perdas | Meu Gestor Rural', loadComponent: () => import('./features/operacoes/perdas.component').then(m => m.PerdasComponent) },
+      { path: 'gastos', title: 'Gastos | Meu Gestor Rural', loadComponent: () => import('./features/operacoes/gastos.component').then(m => m.GastosComponent) },
       { path: 'financeiro', title: 'Resumo financeiro | Meu Gestor Rural', loadComponent: () => import('./features/financeiro/financeiro.component').then(m => m.FinanceiroComponent) },
       { path: 'safras', title: 'Safras | Meu Gestor Rural', loadComponent: () => import('./features/producao/safras.component').then(m => m.SafrasComponent) },
       { path: 'plantacoes', title: 'Plantações | Meu Gestor Rural', loadComponent: () => import('./features/producao/plantacoes.component').then(m => m.PlantacoesComponent) },
