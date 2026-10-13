@@ -38,8 +38,8 @@ export const MENU: MenuSection[] = [
   {
     title: 'Comercial',
     items: [
-      { label: 'Estoque', icon: '🏬', soon: true },
-      { label: 'Vendas', icon: '💰', soon: true },
+      { label: 'Estoque', icon: '🏬', route: '/estoque' },
+      { label: 'Vendas', icon: '💰', route: '/vendas' },
       { label: 'Resumo financeiro', icon: '📊', route: '/financeiro' },
     ],
   },
