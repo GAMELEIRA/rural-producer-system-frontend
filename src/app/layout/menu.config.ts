@@ -39,7 +39,7 @@ export const MENU: MenuSection[] = [
     items: [
       { label: 'Estoque', icon: '🏬', soon: true },
       { label: 'Vendas', icon: '💰', soon: true },
-      { label: 'Resumo financeiro', icon: '📊', soon: true },
+      { label: 'Resumo financeiro', icon: '📊', route: '/financeiro' },
     ],
   },
 ];
