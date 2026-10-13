@@ -40,6 +40,7 @@ export class PlantacoesComponent implements OnInit {
  private readonly api=inject(ProducaoService);
  private readonly culturasApi=inject(CulturaService);
  private readonly talhoesApi=inject(TalhaoService);
+ private readonly produtosApi=inject(ProdutoService);
  private readonly notify=inject(NotificationService);
  private readonly confirm=inject(ConfirmService);
  private readonly fb=inject(FormBuilder).nonNullable;
