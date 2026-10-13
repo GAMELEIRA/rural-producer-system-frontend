@@ -28,18 +28,19 @@ export const MENU: MenuSection[] = [
   {
     title: 'Produção',
     items: [
-      { label: 'Plantações', icon: '🌾', soon: true },
-      { label: 'Aplicação de insumos', icon: '💧', soon: true },
-      { label: 'Safras', icon: '📅', soon: true },
-      { label: 'Perdas', icon: '⚠️', soon: true },
+      { label: 'Plantações', icon: '🌾', route: '/plantacoes' },
+      { label: 'Aplicação de insumos', icon: '💧', route: '/aplicacoes-insumo' },
+      { label: 'Safras', icon: '📅', route: '/safras' },
+      { label: 'Gastos de produção', icon: '🧾', route: '/gastos' },
+      { label: 'Perdas', icon: '⚠️', route: '/perdas' },
     ],
   },
   {
     title: 'Comercial',
     items: [
-      { label: 'Estoque', icon: '🏬', soon: true },
-      { label: 'Vendas', icon: '💰', soon: true },
-      { label: 'Resumo financeiro', icon: '📊', soon: true },
+      { label: 'Estoque', icon: '🏬', route: '/estoque' },
+      { label: 'Vendas', icon: '💰', route: '/vendas' },
+      { label: 'Resumo financeiro', icon: '📊', route: '/financeiro' },
     ],
   },
 ];

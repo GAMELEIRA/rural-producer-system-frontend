@@ -7,7 +7,7 @@
         Bem-vindo ao Meu Gestor Rural
       }
     </h1>
-    <p>Comece pelos cadastros básicos: eles são a base para registrar plantações e safras.</p>
+    <p>Acompanhe as safras, plantações e informações da propriedade.</p>
   </div>
 </div>
 
@@ -20,3 +20,33 @@
     </a>
   }
 </div>
+
+@if (dashboardError()) {
+  <div class="card" style="margin-top:1rem"><p>Não foi possível carregar os indicadores.</p><button class="btn btn--outline" (click)="carregarDashboard()">Tentar novamente</button></div>
+}
+@if (resumo(); as r) {
+  <section class="metrics" aria-label="Indicadores da propriedade">
+    <div class="card"><strong>Plantações ativas</strong><h2>{{r.totalPlantacoesAtivas}}</h2></div>
+    <div class="card"><strong>Safras em andamento</strong><h2>{{r.totalSafrasEmAndamento}}</h2></div>
+    <div class="card"><strong>Receita de vendas</strong><h2>{{r.receitaTotalVendas.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}}</h2></div>
+    <div class="card"><strong>Custos registrados</strong><h2>{{r.despesasTotais.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}}</h2></div>
+    <div class="card"><strong>Saldo operacional</strong><h2>{{r.saldoLiquido.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}}</h2></div>
+  </section>
+}
+@if (graficos(); as g) {
+  <section class="card" style="margin-top:1.25rem">
+    <h2>Receita de vendas por mês</h2>
+    @for (mes of g.vendasPorMes; track mes.mesAno) {
+      <div class="chart-line"><span>{{mes.mesAno}}</span><div class="chart-track"><div class="chart-bar" [style.width.%]="mes.total / maiorVenda() * 100"></div></div><strong>{{mes.total.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}}</strong></div>
+    } @empty { <p>Não há vendas concluídas para o período.</p> }
+  </section>
+  <section class="card" style="margin-top:1rem"><h2>Situação das plantações</h2>
+    @for (item of g.statusPlantacoes;track item.status) { <p>{{item.status}}: <strong>{{item.quantidade}}</strong></p> } @empty {<p>Não há plantações registradas.</p>}
+  </section>
+}
+
+<section class="card" style="margin-top:1rem" aria-label="Gráfico de colheitas"><h2>Quantidade colhida por mês</h2>
+<p class="table__muted">Quantidade agregada conforme a unidade informada nos cultivos; compare apenas plantações de mesma unidade.</p>
+@for(item of colheitas();track item.mes){<div class="chart-line"><span>{{item.mes}}</span><div class="chart-track"><div class="chart-bar" [style.width.%]="item.quantidade/maiorColheita()*100"></div></div><strong>{{item.quantidade}}</strong></div>}
+@empty{<p>Nenhuma colheita finalizada registrada.</p>}
+</section>

@@ -40,3 +40,5 @@
     color: var(--color-text-muted);
   }
 }
+
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-top:1.5rem}.metrics h2{margin-bottom:0;color:var(--color-primary-dark)}.chart-line{display:grid;grid-template-columns:70px minmax(80px,1fr) 120px;align-items:center;gap:1rem;margin:.75rem 0}.chart-track{height:18px;background:var(--color-primary-light);border-radius:6px;overflow:hidden}.chart-bar{height:100%;background:var(--color-primary);border-radius:6px}
