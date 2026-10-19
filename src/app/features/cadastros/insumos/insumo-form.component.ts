@@ -29,10 +29,11 @@ export class InsumoFormComponent extends CrudFormBase<Insumo, InsumoInput> {
     precoUnitario: [null as number | null, [Validators.required, Validators.min(0)]],
     observacoes: ['', Validators.maxLength(500)],
     imagemCodigo: [''],
+    imagemPersonalizada: [''],
   });
 
   protected patchForm(item: Insumo): void {
-    this.form.patchValue({ ...item, observacoes: item.observacoes ?? '', imagemCodigo: item.imagemCodigo ?? '' });
+    this.form.patchValue({ ...item, observacoes: item.observacoes ?? '', imagemCodigo: item.imagemCodigo ?? '', imagemPersonalizada: item.imagemPersonalizada ?? '' });
   }
 
   protected buildPayload(): InsumoInput {
@@ -45,6 +46,7 @@ export class InsumoFormComponent extends CrudFormBase<Insumo, InsumoInput> {
       precoUnitario: Number(value.precoUnitario),
       observacoes: value.observacoes.trim() || undefined,
       imagemCodigo: value.imagemCodigo || null,
+      imagemPersonalizada: value.imagemPersonalizada || null,
     };
   }
 }
