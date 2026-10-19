@@ -31,7 +31,7 @@ import { ConfirmService } from '../../core/notifications/confirm.service';
  @if(carregando()){<p role="status">Carregando plantações e perdas...</p>}
  @if(error()){<p class="table__warn">Falha ao carregar dados. <button (click)="carregar()" class="btn btn--outline">Tentar novamente</button></p>}
  <div class="table-wrap" style="margin-top:1.25rem"><table class="table"><thead><tr><th>Safra</th><th>Cultura</th><th>Talhão</th><th>Plantio</th><th>Plantada</th><th>Colhida líquida</th><th>Perdas</th><th>Status</th><th>Ações</th></tr></thead>
- <tbody>@for(p of plantacoes();track p.idPlantacao){<tr><td>{{p.nomeSafra || '—'}}</td><td>{{p.nomeCultura}}</td><td>{{p.nomeTalhao}}</td><td>{{p.dataPlantio}}</td><td>{{p.quantidadePlantada}}</td><td>{{p.quantidadeColhida ?? '—'}}</td><td>{{totalPerdas(p.idPlantacao)}}</td><td>{{p.status}}</td>
+ <tbody>@for(p of plantacoes();track p.idPlantacao){<tr><td>{{p.nomeSafra || '—'}}</td><td><strong>#{{p.idPlantacao}}</strong> · {{p.nomeCultura}}</td><td>{{p.nomeTalhao}}</td><td>{{p.dataPlantio}}</td><td>{{p.quantidadePlantada}}</td><td>{{p.quantidadeColhida ?? '—'}}</td><td>{{totalPerdas(p.idPlantacao)}}</td><td>{{p.status}}</td>
  <td class="table__actions">@if(p.status!=='COLHIDA'&&p.status!=='COLHIDO'){<button class="btn btn--outline btn--sm" (click)="colher(p)">Registrar colheita</button>}<button class="btn btn--danger btn--sm" (click)="excluir(p)">Excluir</button></td></tr>
  } @empty {<tr><td colspan="9">Nenhuma plantação cadastrada.</td></tr>}</tbody></table></div>
  @if(colheitaId() !== null){
