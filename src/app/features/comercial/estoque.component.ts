@@ -232,7 +232,7 @@ export class EstoqueComponent implements OnInit {
       }));
       const cultura = this.culturas().find(c => c.nome.toLocaleLowerCase('pt-BR') === p.nome.toLocaleLowerCase('pt-BR'));
       return this.agrupamento('produto', p.idProduto, p.nome, p.unidadeMedida, Number(p.quantidadeEstoque),
-        Number(p.precoVenda), cultura ? imagemPorCodigo(IMAGENS_CULTURAS, cultura.imagemCodigo) : null, movimentos);
+        Number(p.precoVenda), p.imagemPersonalizada || (p.imagemCodigo ? imagemDoCadastro(IMAGENS_CULTURAS,p.imagemCodigo) : cultura ? imagemDoCadastro(IMAGENS_CULTURAS,cultura.imagemCodigo,cultura.imagemPersonalizada) : null), movimentos);
     });
     const insumos = this.insumos().map(i => {
       const movimentos = this.movimentosInsumos().filter(m => m.idInsumo === i.idInsumo).map(m => ({
@@ -245,7 +245,7 @@ export class EstoqueComponent implements OnInit {
         identificador: String(m.idMovimentacao)
       }));
       return this.agrupamento('insumo', i.idInsumo, i.nome, i.unidadeMedida, Number(i.quantidadeEstoque),
-        Number(i.precoUnitario), imagemPorCodigo(IMAGENS_INSUMOS, i.imagemCodigo), movimentos);
+        Number(i.precoUnitario), imagemDoCadastro(IMAGENS_INSUMOS, i.imagemCodigo,i.imagemPersonalizada), movimentos);
     });
     return [...produtos, ...insumos].sort((a,b) => a.nome.localeCompare(b.nome,'pt-BR'));
   });
