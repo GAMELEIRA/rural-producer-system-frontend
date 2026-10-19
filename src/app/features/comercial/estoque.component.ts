@@ -8,6 +8,7 @@ import { CulturaService, InsumoService, ProdutoService } from '../../core/cadast
 import { Cultura, Insumo, Produto } from '../../core/models/cadastros.model';
 import { IMAGENS_CULTURAS, IMAGENS_INSUMOS, imagemDoCadastro } from '../../core/models/imagens-catalogo';
 import { NotificationService } from '../../core/notifications/notification.service';
+import { AppModalComponent } from '../../shared/components/app-modal/app-modal.component';
 
 type Classe = 'produto' | 'insumo';
 type Sentido = 'ENTRADA' | 'SAIDA';
@@ -32,7 +33,7 @@ interface Saldo {
 
 @Component({
   selector: 'app-estoque',
-  imports: [ReactiveFormsModule, CurrencyPipe, DatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, CurrencyPipe, DatePipe, DecimalPipe, AppModalComponent],
   template: `
     <div class="page-header">
       <div><h1>Estoque da propriedade</h1><p>Um resumo por produto ou insumo. Abra os detalhes para ver cada entrada e saída.</p></div>
@@ -100,6 +101,7 @@ interface Saldo {
         </select>
       </label>
     </div>
+    @if(carregando()){<p role="status" aria-live="polite">Atualizando informações do estoque...</p>}
     <div class="stock-totals">
       <div class="card"><span>Itens encontrados</span><strong>{{filtradas().length}}</strong></div>
       <div class="card"><span>Valor atual em estoque</span><strong>{{valorAtual() | currency:'BRL'}}</strong></div>
@@ -136,7 +138,7 @@ interface Saldo {
       </table>
     </div>
     @if (detalhe(); as s) {
-      <section class="card details">
+      <app-modal [titulo]="'Histórico: '+s.nome" (fechado)="selecionado.set(null)">
         <div class="details-header">
           <div><h2>Histórico: {{s.nome}}</h2>
             <p><strong>Saldo atual:</strong> {{s.saldo | number:'1.0-3'}} {{s.unidade}} ·
@@ -170,7 +172,7 @@ interface Saldo {
           </tbody>
         </table></div>
         <p class="subtle">O histórico de insumos inclui aplicações ainda existentes importadas na migração e registros feitos após a atualização. Movimentações manuais antigas sem registro permanecem apenas no saldo atual.</p>
-      </section>
+      </app-modal>
     }
   `,
   styles: [`
@@ -205,6 +207,7 @@ export class EstoqueComponent implements OnInit {
   readonly filtroTipo = signal<'todos' | Sentido>('todos');
   readonly selecionado = signal<string | null>(null);
   readonly salvando = signal(false);
+  readonly carregando = signal(false);
   readonly erro = signal(false);
 
   readonly form = this.fb.group({
@@ -274,6 +277,7 @@ export class EstoqueComponent implements OnInit {
     this.filtroTipo.set('todos');
   }
   carregar(): void {
+    this.carregando.set(true);
     forkJoin({
       produtos: this.produtosApi.list(), insumos: this.insumosApi.list(), culturas: this.culturasApi.list(),
       produtosMov: this.http.get<MovimentoProduto[]>(environment.apiUrl+'/estoque'),
@@ -282,7 +286,8 @@ export class EstoqueComponent implements OnInit {
       this.produtos.set(r.produtos); this.insumos.set(r.insumos); this.culturas.set(r.culturas);
       this.movimentosProdutos.set(r.produtosMov); this.movimentosInsumos.set(r.insumosMov);
       this.erro.set(false);
-    }, error: () => this.erro.set(true)});
+      this.carregando.set(false);
+    }, error: () => {this.erro.set(true);this.carregando.set(false);}});
   }
   salvar(): void {
     if (this.form.invalid) {this.form.markAllAsTouched();this.notify.error('Preencha os campos obrigatórios.');return;}
