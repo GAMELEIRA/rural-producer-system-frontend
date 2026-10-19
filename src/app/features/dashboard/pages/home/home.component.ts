@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit {
   private readonly producaoApi = inject(ProducaoService);
   protected readonly colheitas = signal<{mes:string;quantidade:number}[]>([]);
   protected readonly maiorColheita = () => Math.max(1,...this.colheitas().map(x => x.quantidade));
-  protected readonly resumo = signal<{ totalPlantacoesAtivas:number; totalSafrasEmAndamento:number; receitaTotalVendas:number; despesasTotais:number; saldoLiquido:number; totalVendasRealizadas:number } | null>(null);
+  protected readonly resumo = signal<{ totalPlantacoesAtivas:number; totalSafrasEmAndamento:number; receitaTotalVendas:number; despesasTotais:number; saldoLiquido:number; custoTotalPerdas:number; totalVendasRealizadas:number } | null>(null);
   protected readonly graficos = signal<{vendasPorMes:{mesAno:string;total:number}[]; statusPlantacoes:{status:string;quantidade:number}[]} | null>(null);
   protected readonly dashboardError = signal(false);
   protected readonly maiorVenda = () => Math.max(1, ...(this.graficos()?.vendasPorMes.map(x => x.total) ?? []));
