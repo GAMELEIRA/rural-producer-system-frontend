@@ -44,7 +44,7 @@
           @for (item of items(); track item.idInsumo) {
             <tr>
               <td>
-                <strong>{{ item.nome }}</strong>
+                @if (imagem(item.imagemCodigo,item.imagemPersonalizada); as url) {<img [src]="url" alt="" style="width:28px;height:28px;vertical-align:middle;margin-right:8px" />}<strong>{{ item.nome }}</strong>
               </td>
               <td>{{ item.tipo }}</td>
               <td class="table__num" [class.table__warn]="item.quantidadeEstoque <= 0">

@@ -7,6 +7,13 @@
 
 <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
   <div class="form-grid">
+    <div class="form-grid__full"><label>Cultura de origem (opcional)
+      <select formControlName="idCultura" (change)="aoEscolherCultura()">
+        <option [ngValue]="null">Produto sem cultura vinculada</option>
+        @for (c of culturas();track c.idCultura) {<option [ngValue]="c.idCultura">{{c.nome}}</option>}
+      </select></label>
+      <p>Ao selecionar uma cultura, o nome e a imagem são preenchidos automaticamente e podem ser alterados.</p>
+    </div>
     <div class="form-grid__full">
       <app-form-field label="Nome" [control]="form.controls.nome" forId="nome">
         <input id="nome" type="text" formControlName="nome" placeholder="Ex.: Tomate cereja" />
@@ -54,6 +61,12 @@
       />
     </app-form-field>
 
+    <div class="form-grid__full">
+      <app-imagem-catalogo [items]="imagens" [selected]="form.controls.imagemCodigo.value || ''"
+        [personalizada]="form.controls.imagemPersonalizada.value || ''"
+        (selectedChange)="form.controls.imagemCodigo.setValue($event)"
+        (personalizadaChange)="form.controls.imagemPersonalizada.setValue($event)"></app-imagem-catalogo>
+    </div>
     <div class="form-grid__full">
       <app-form-field label="Observações" [control]="form.controls.observacoes" forId="observacoes">
         <textarea
