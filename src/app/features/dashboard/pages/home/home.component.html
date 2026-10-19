@@ -21,6 +21,7 @@
   }
 </div>
 
+@if(carregando()){<p role="status">Carregando indicadores da propriedade...</p>}
 @if (dashboardError()) {
   <div class="card" style="margin-top:1rem"><p>Não foi possível carregar os indicadores.</p><button class="btn btn--outline" (click)="carregarDashboard()">Tentar novamente</button></div>
 }
