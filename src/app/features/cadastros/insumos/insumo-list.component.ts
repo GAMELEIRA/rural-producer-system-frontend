@@ -3,7 +3,7 @@ import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { InsumoService } from '../../../core/cadastros/cadastros.services';
 import { Insumo } from '../../../core/models/cadastros.model';
-import { IMAGENS_INSUMOS, imagemPorCodigo } from '../../../core/models/imagens-catalogo';
+import { IMAGENS_INSUMOS, imagemDoCadastro } from '../../../core/models/imagens-catalogo';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { CrudListBase } from '../shared/crud-list.base';
 
@@ -15,7 +15,7 @@ import { CrudListBase } from '../shared/crud-list.base';
 export class InsumoListComponent extends CrudListBase<Insumo> {
   protected readonly service = inject(InsumoService);
   protected readonly entityLabel = 'insumo';
-  protected readonly imagem = (codigo?: string | null) => imagemPorCodigo(IMAGENS_INSUMOS, codigo);
+  protected readonly imagem = (codigo?: string | null, personalizada?: string | null) => imagemDoCadastro(IMAGENS_INSUMOS, codigo, personalizada);
 
   protected idOf(item: Insumo): number {
     return item.idInsumo;
