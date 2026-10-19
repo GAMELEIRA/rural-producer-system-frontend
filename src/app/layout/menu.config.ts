@@ -17,7 +17,7 @@ export const MENU: MenuSection[] = [
     items: [{ label: 'Início', icon: '🏠', route: '/' }],
   },
   {
-    title: 'Cadastros',
+    title: 'Preparação da propriedade',
     items: [
       { label: 'Culturas', icon: '🌱', route: '/culturas' },
       { label: 'Talhões', icon: '🗺️', route: '/talhoes' },
@@ -26,17 +26,17 @@ export const MENU: MenuSection[] = [
     ],
   },
   {
-    title: 'Produção',
+    title: 'Dia a dia no campo',
     items: [
+      { label: 'Safras', icon: '📅', route: '/safras' },
       { label: 'Plantações', icon: '🌾', route: '/plantacoes' },
       { label: 'Aplicação de insumos', icon: '💧', route: '/aplicacoes-insumo' },
-      { label: 'Safras', icon: '📅', route: '/safras' },
       { label: 'Gastos de produção', icon: '🧾', route: '/gastos' },
       { label: 'Perdas', icon: '⚠️', route: '/perdas' },
     ],
   },
   {
-    title: 'Comercial',
+    title: 'Estoque e vendas',
     items: [
       { label: 'Estoque', icon: '🏬', route: '/estoque' },
       { label: 'Vendas', icon: '💰', route: '/vendas' },
