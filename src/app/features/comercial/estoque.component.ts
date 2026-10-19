@@ -6,7 +6,7 @@ import { forkJoin } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { CulturaService, InsumoService, ProdutoService } from '../../core/cadastros/cadastros.services';
 import { Cultura, Insumo, Produto } from '../../core/models/cadastros.model';
-import { IMAGENS_CULTURAS, IMAGENS_INSUMOS, imagemPorCodigo } from '../../core/models/imagens-catalogo';
+import { IMAGENS_CULTURAS, IMAGENS_INSUMOS, imagemDoCadastro } from '../../core/models/imagens-catalogo';
 import { NotificationService } from '../../core/notifications/notification.service';
 
 type Classe = 'produto' | 'insumo';
