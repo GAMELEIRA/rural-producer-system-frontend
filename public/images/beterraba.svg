@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Beterraba">
+  <defs>
+    <linearGradient id="root" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#b33f81"/><stop offset=".58" stop-color="#7c255c"/><stop offset="1" stop-color="#4b163b"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#75bd67"/><stop offset="1" stop-color="#21794a"/>
+    </linearGradient>
+  </defs>
+  <path d="M80 72C80 55 80 41 77 19" fill="none" stroke="#46723d" stroke-width="7" stroke-linecap="round"/>
+  <path d="M78 52C53 50 36 34 34 9C64 15 81 31 78 52Z" fill="url(#leaf)" stroke="#297447" stroke-width="2.5"/>
+  <path d="M81 46C87 23 104 13 127 12C122 36 108 52 81 46Z" fill="url(#leaf)" stroke="#297447" stroke-width="2.5"/>
+  <path d="M77 67C56 68 43 57 40 39C59 40 74 47 77 67Z" fill="#369655"/>
+  <path d="M83 68C95 49 117 42 135 53C118 72 100 78 83 68Z" fill="#4caa5e"/>
+  <path d="M80 60C47 59 26 78 31 105C36 128 65 140 80 152C95 139 123 125 129 104C137 75 111 59 80 60Z" fill="url(#root)" stroke="#621943" stroke-width="3"/>
+  <path d="M42 92C51 76 66 73 78 74" fill="none" stroke="#d889ae" stroke-width="6" opacity=".5" stroke-linecap="round"/>
+  <path d="M61 139L80 157L100 138" fill="none" stroke="#6b1e4c" stroke-width="2" stroke-linecap="round"/>
+</svg>
