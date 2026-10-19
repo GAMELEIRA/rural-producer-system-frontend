@@ -9,6 +9,7 @@ export interface Cultura {
   tipo: string;
   cicloEstimado: number;
   unidadeCiclo: string;
+  imagemCodigo?: string | null;
   observacoes?: string;
 }
 
@@ -28,6 +29,7 @@ export interface Insumo {
   unidadeMedida: string;
   quantidadeEstoque: number;
   precoUnitario: number;
+  imagemCodigo?: string | null;
   observacoes?: string;
 }
 

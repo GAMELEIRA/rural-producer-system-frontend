@@ -31,6 +31,7 @@
     <div class="card"><strong>Receita de vendas</strong><h2>{{r.receitaTotalVendas.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}}</h2></div>
     <div class="card"><strong>Custos registrados</strong><h2>{{r.despesasTotais.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}}</h2></div>
     <div class="card"><strong>Saldo operacional</strong><h2>{{r.saldoLiquido.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}}</h2></div>
+    <div class="card"><strong>Perdas estimadas registradas</strong><h2>{{r.custoTotalPerdas.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}}</h2></div>
   </section>
 }
 @if (graficos(); as g) {
