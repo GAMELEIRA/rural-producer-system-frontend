@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { AppModalComponent } from '../../shared/components/app-modal/app-modal.component';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
@@ -8,7 +9,7 @@ import { InsumoService } from '../../core/cadastros/cadastros.services';
 import { Insumo } from '../../core/models/cadastros.model';
 import { NotificationService } from '../../core/notifications/notification.service';
 import { ConfirmService } from '../../core/notifications/confirm.service';
-@Component({selector:'app-gastos', imports:[ReactiveFormsModule],template:`
+@Component({selector:'app-gastos', imports:[ReactiveFormsModule,AppModalComponent],template:`
 <div class="page-header"><div><h1>Custos da produção</h1><p>Aplicações de insumos são lançadas automaticamente como custos. Cadastre aqui somente despesas adicionais.</p></div></div>
 <form class="card" [formGroup]="form" (ngSubmit)="salvar()"><div class="form-grid"><label>Plantação *<select formControlName="idPlantacao"><option [ngValue]="null">Selecione</option>@for(p of plantacoes();track p.idPlantacao){<option [ngValue]="p.idPlantacao">{{p.nomeCultura}} - {{p.nomeTalhao}}</option>}</select></label>
 <label>Descrição *<input type="text"  formControlName="descricao"></label>
@@ -23,10 +24,10 @@ import { ConfirmService } from '../../core/notifications/confirm.service';
 <button class="rural-entry__trigger" (click)="detalhe.set(detalhe()===item.chave?null:item.chave)" type="button">
 <strong>{{item.titulo}}</strong><span>{{item.plantacao}} · {{item.data}}</span><strong>{{moeda(item.valor)}}</strong><span>{{item.automatico?'Custo automático de insumo':'Gasto adicional'}}</span>
 </button>
-@if(detalhe()===item.chave){<div class="rural-entry__detail"><p>Categoria: {{item.categoria}}</p><p>Plantação: {{item.plantacao}}</p><p>Registro de origem: {{item.chave}}</p>
+@if(detalhe()===item.chave){<app-modal titulo="Detalhes do custo" (fechado)="detalhe.set(null)"><p>Categoria: {{item.categoria}}</p><p>Plantação: {{item.plantacao}}</p><p>Registro de origem: {{item.chave}}</p>
 @if(!item.automatico){<button class="btn btn--danger btn--sm" (click)="excluir(item.original!)">Excluir gasto</button>}
 @else{<p>Gerenciado pela aplicação de insumos. Para corrigir, altere ou exclua a aplicação correspondente.</p>}
-</div>}
+</app-modal>}
 </article>}
 @empty{<div class="card">Nenhum custo de produção registrado.</div>}
 </div>
