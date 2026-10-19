@@ -223,7 +223,7 @@ export class EstoqueComponent implements OnInit {
     const produtos = this.produtos().map(p => {
       const movimentos = this.movimentosProdutos().filter(m => m.idProduto === p.idProduto).map(m => ({
         chave: 'produto-' + m.idMovimentacao,
-        tipo: (m.tipo.startsWith('ENTRADA') ? 'ENTRADA' : 'SAIDA') as Sentido,
+        tipo: (m.tipo.startsWith('ENTRADA') || m.tipo.startsWith('ESTORNO') ? 'ENTRADA' : 'SAIDA') as Sentido,
         descricao: m.tipo.replaceAll('_', ' '),
         quantidade: Number(m.quantidade),
         data: m.dataMovimentacao,
