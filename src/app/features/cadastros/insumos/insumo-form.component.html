@@ -64,7 +64,9 @@
 
     <div class="form-grid__full">
       <app-imagem-catalogo [items]="imagens" [selected]="form.controls.imagemCodigo.value || ''"
-        (selectedChange)="form.controls.imagemCodigo.setValue($event)"></app-imagem-catalogo>
+        [personalizada]="form.controls.imagemPersonalizada.value || ''"
+        (selectedChange)="form.controls.imagemCodigo.setValue($event)"
+        (personalizadaChange)="form.controls.imagemPersonalizada.setValue($event)"></app-imagem-catalogo>
     </div>
     <div class="form-grid__full">
       <app-form-field label="Observações" [control]="form.controls.observacoes" forId="observacoes">
