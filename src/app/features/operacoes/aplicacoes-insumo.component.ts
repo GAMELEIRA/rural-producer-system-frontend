@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { AppModalComponent } from '../../shared/components/app-modal/app-modal.component';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
@@ -8,7 +9,7 @@ import { InsumoService } from '../../core/cadastros/cadastros.services';
 import { Insumo } from '../../core/models/cadastros.model';
 import { NotificationService } from '../../core/notifications/notification.service';
 import { ConfirmService } from '../../core/notifications/confirm.service';
-@Component({selector:'app-aplicacoes-insumo', imports:[ReactiveFormsModule],template:`
+@Component({selector:'app-aplicacoes-insumo', imports:[ReactiveFormsModule,AppModalComponent],template:`
 <div class="page-header"><div><h1>Aplicações de insumo</h1><p>Registre e acompanhe os lançamentos vinculados aos cultivos.</p></div></div>
 <form class="card" [formGroup]="form" (ngSubmit)="salvar()"><div class="form-grid"><label>Plantação *<select formControlName="idPlantacao"><option [ngValue]="null">Selecione</option>@for(p of plantacoes();track p.idPlantacao){<option [ngValue]="p.idPlantacao">{{p.nomeCultura}} - {{p.nomeTalhao}}</option>}</select></label>
 <label>Insumo *<select formControlName="idInsumo"><option [ngValue]="null">Selecione</option>@for(i of insumos();track i.idInsumo){<option [ngValue]="i.idInsumo">{{i.nome}} ({{i.quantidadeEstoque}} {{i.unidadeMedida}})</option>}</select></label>
@@ -20,8 +21,8 @@ import { ConfirmService } from '../../core/notifications/confirm.service';
 <div class="rural-cards">
 @for(item of registros();track item['idAplicacao']) {
  <article class="card rural-entry"><button type="button" class="rural-entry__trigger" (click)="detalhe.set(detalhe()===item['idAplicacao']?null:item['idAplicacao'])">
- <strong>{{nomeInsumo(item['idInsumo'])}}</strong><span>{{nomePlantacao(item['idPlantacao'])}}</span><span>{{item['dataAplicacao']}} · {{item['quantidade']}} {{unidade(item['idInsumo'])}}</span><strong>{{moeda(item['custoTotal'])}}</strong><span>{{detalhe()===item['idAplicacao']?'Ocultar detalhes ▲':'Ver detalhes ▼'}}</span></button>
- @if(detalhe()===item['idAplicacao']){<div class="rural-entry__detail"><p>Aplicação nº {{item['idAplicacao']}}</p><p>Insumo: {{nomeInsumo(item['idInsumo'])}}</p><p>Plantação: {{nomePlantacao(item['idPlantacao'])}}</p><p>Observações: {{item['observacoes']||'—'}}</p><button class="btn btn--danger btn--sm" (click)="excluir(item)">Excluir aplicação e estornar insumo</button></div>}
+ <strong>{{nomeInsumo(item['idInsumo'])}}</strong><span>{{nomePlantacao(item['idPlantacao'])}}</span><span>{{item['dataAplicacao']}} · {{item['quantidade']}} {{unidade(item['idInsumo'])}}</span><strong>{{moeda(item['custoTotal'])}}</strong><span>Ver detalhes</span></button>
+ @if(detalhe()===item['idAplicacao']){<app-modal titulo="Aplicação de insumo" (fechado)="detalhe.set(null)"><p>Aplicação nº {{item['idAplicacao']}}</p><p>Insumo: {{nomeInsumo(item['idInsumo'])}}</p><p>Plantação: {{nomePlantacao(item['idPlantacao'])}}</p><p>Observações: {{item['observacoes']||'—'}}</p><button class="btn btn--danger btn--sm" (click)="excluir(item)">Excluir aplicação e estornar insumo</button></app-modal>}
  </article>
 } @empty {<div class="card">Nenhuma aplicação registrada.</div>}
 </div>
