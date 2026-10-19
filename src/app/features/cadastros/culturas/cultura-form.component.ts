@@ -29,10 +29,11 @@ export class CulturaFormComponent extends CrudFormBase<Cultura, CulturaInput> {
     unidadeCiclo: ['dias', Validators.required],
     observacoes: ['', Validators.maxLength(500)],
     imagemCodigo: [''],
+    imagemPersonalizada: [''],
   });
 
   protected patchForm(item: Cultura): void {
-    this.form.patchValue({ ...item, observacoes: item.observacoes ?? '', imagemCodigo: item.imagemCodigo ?? '' });
+    this.form.patchValue({ ...item, observacoes: item.observacoes ?? '', imagemCodigo: item.imagemCodigo ?? '', imagemPersonalizada: item.imagemPersonalizada ?? '' });
   }
 
   protected buildPayload(): CulturaInput {
@@ -44,6 +45,7 @@ export class CulturaFormComponent extends CrudFormBase<Cultura, CulturaInput> {
       unidadeCiclo: value.unidadeCiclo,
       observacoes: value.observacoes.trim() || undefined,
       imagemCodigo: value.imagemCodigo || null,
+      imagemPersonalizada: value.imagemPersonalizada || null,
     };
   }
 }

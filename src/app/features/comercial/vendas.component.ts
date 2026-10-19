@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { AppModalComponent } from '../../shared/components/app-modal/app-modal.component';
 import { ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
@@ -8,7 +9,7 @@ import { Produto } from '../../core/models/cadastros.model';
 import { NotificationService } from '../../core/notifications/notification.service';
 import { ConfirmService } from '../../core/notifications/confirm.service';
 interface Venda {idVenda:number;cliente:string;dataVenda:string;valorTotal:number;status:string;formaPagamento:string;itens:{idProduto:number;nomeProduto:string;quantidade:number;precoUnitario:number;subtotal:number}[]}
-@Component({selector:'app-vendas',imports:[ReactiveFormsModule],template:`
+@Component({selector:'app-vendas',imports:[ReactiveFormsModule,AppModalComponent],template:`
 <div class="page-header"><div><h1>Vendas</h1><p>Registre ou corrija vendas com atualização automática do estoque.</p></div></div>
 @if(editando()!==null){<div class="card"><strong>Corrigindo venda #{{editando()}}</strong><p>Os itens anteriores serão estornados e substituídos ao salvar.</p><button type="button" class="btn btn--ghost" (click)="cancelarEdicao()">Cancelar edição</button></div>}
 <form class="card" [formGroup]="form" (ngSubmit)="salvar()">
@@ -29,28 +30,32 @@ interface Venda {idVenda:number;cliente:string;dataVenda:string;valorTotal:numbe
 <div class="form-actions"><button [disabled]="saving()" type="submit" class="btn btn--primary">{{editando()===null?"Registrar venda":"Salvar correções"}}</button></div>
 </form>
 @if(error()){<div class="card">Falha ao consultar vendas. <button class="btn btn--outline" (click)="carregar()">Tentar novamente</button></div>}
+@if(carregando()){<p role="status">Carregando vendas...</p>}
 <div class="table-wrap" style="margin-top:1rem"><table class="table"><thead><tr><th>Data</th><th>Cliente</th><th>Valor</th><th>Pagamento</th><th>Status</th><th>Ações</th></tr></thead><tbody>
 @for(v of vendas();track v.idVenda){<tr><td>{{v.dataVenda}}</td><td>{{v.cliente}}</td><td>{{moeda(v.valorTotal)}}</td><td>{{v.formaPagamento}}</td><td>{{v.status}}</td>
-<td><button class="btn btn--outline btn--sm" (click)="detalhe.set(detalhe()===v.idVenda?null:v.idVenda)">{{detalhe()===v.idVenda?"Ocultar":"Detalhes"}}</button> @if(v.status!=='CANCELADA'){<button class="btn btn--outline btn--sm" (click)="editar(v)">Editar</button> <button class="btn btn--danger btn--sm" (click)="cancelar(v)">Cancelar</button>}</td></tr>
-@if(detalhe()===v.idVenda){<tr><td colspan="6"><div class="card"><strong>Itens da venda #{{v.idVenda}}</strong>
-@for(item of v.itens;track $index){<p>{{item.nomeProduto || nomeProduto(item.idProduto)}} — {{item.quantidade}} × {{moeda(item.precoUnitario)}} = {{moeda(item.subtotal)}}</p>}
-<p>Cliente: {{v.cliente}} · Pagamento: {{v.formaPagamento}}</p></div></td></tr>}
+<td><button class="btn btn--outline btn--sm" (click)="detalhe.set(detalhe()===v.idVenda?null:v.idVenda)">Detalhes</button> @if(v.status!=='CANCELADA'){<button class="btn btn--outline btn--sm" (click)="editar(v)">Editar</button> <button class="btn btn--danger btn--sm" (click)="cancelar(v)">Cancelar</button>}</td></tr>
+
 }
 @empty{<tr><td colspan="6">Nenhuma venda realizada.</td></tr>}</tbody></table></div>
+@if(vendaDetalhada();as v){<app-modal [titulo]="'Detalhes da venda #'+v.idVenda" (fechado)="detalhe.set(null)">
+@for(item of v.itens;track $index){<p>{{item.nomeProduto || nomeProduto(item.idProduto)}} — {{item.quantidade}} × {{moeda(item.precoUnitario)}} = {{moeda(item.subtotal)}}</p>}
+<p>Cliente: {{v.cliente}} · Pagamento: {{v.formaPagamento}}</p>
+<p><strong>Total:</strong> {{moeda(v.valorTotal)}}</p></app-modal>}
 `})
 export class VendasComponent implements OnInit {
  private readonly http=inject(HttpClient);private readonly produtosApi=inject(ProdutoService);
  private readonly notify=inject(NotificationService);private readonly confirm=inject(ConfirmService);
  private readonly fb=inject(FormBuilder).nonNullable;
  readonly editando=signal<number|null>(null);readonly detalhe=signal<number|null>(null);
- readonly produtos=signal<Produto[]>([]);readonly vendas=signal<Venda[]>([]);readonly saving=signal(false);readonly error=signal(false);
+ vendaDetalhada(){return this.vendas().find(v=>v.idVenda===this.detalhe()) ?? null;}
+ readonly produtos=signal<Produto[]>([]);readonly vendas=signal<Venda[]>([]);readonly saving=signal(false);readonly error=signal(false);readonly carregando=signal(false);
  readonly form=this.fb.group({cliente:[''],formaPagamento:['PIX'],itens:this.fb.array([this.novoItem()])});
  get itens():FormArray<ReturnType<VendasComponent['novoItem']>>{return this.form.controls.itens;}
  novoItem(){return this.fb.group({idProduto:[null as number|null,Validators.required],quantidade:[null as number|null,[Validators.required,Validators.min(0.001)]],precoUnitario:[null as number|null,[Validators.required,Validators.min(0.01)]]});}
  adicionarItem(){this.itens.push(this.novoItem());}
  removerItem(i:number){if(this.itens.length>1)this.itens.removeAt(i);}
  ngOnInit(){this.carregar();}
- carregar(){forkJoin({produtos:this.produtosApi.list(),vendas:this.http.get<Venda[]>(environment.apiUrl+'/vendas')}).subscribe({next:r=>{this.produtos.set(r.produtos);this.vendas.set(r.vendas);this.error.set(false);},error:()=>this.error.set(true)});}
+ carregar(){this.carregando.set(true);forkJoin({produtos:this.produtosApi.list(),vendas:this.http.get<Venda[]>(environment.apiUrl+'/vendas')}).subscribe({next:r=>{this.produtos.set(r.produtos);this.vendas.set(r.vendas);this.error.set(false);this.carregando.set(false);},error:()=>{this.error.set(true);this.carregando.set(false);}});}
  nomeProduto(id:number){return this.produtos().find(p=>p.idProduto===id)?.nome||'Produto #'+id;}
  editar(v:Venda){this.editando.set(v.idVenda);this.form.patchValue({cliente:v.cliente,formaPagamento:v.formaPagamento});this.itens.clear();for(const item of v.itens){const grupo=this.novoItem();grupo.patchValue({idProduto:item.idProduto,quantidade:item.quantidade,precoUnitario:item.precoUnitario});this.itens.push(grupo);}window.scrollTo({top:0,behavior:'smooth'});}
  cancelarEdicao(){this.editando.set(null);this.form.reset({cliente:'',formaPagamento:'PIX'});this.itens.clear();this.adicionarItem();}

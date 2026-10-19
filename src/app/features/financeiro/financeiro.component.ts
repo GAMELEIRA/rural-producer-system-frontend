@@ -10,6 +10,7 @@ interface ResumoFinanceiro {
  selector: 'app-financeiro',
  template: `
  <div class="page-header"><div><h1>Resumo financeiro</h1><p>Indicadores calculados automaticamente a partir das movimentações registradas.</p></div></div>
+ @if(carregando()){<p role="status">Atualizando indicadores financeiros...</p>}
  @if(erro()){<div class="card">Não foi possível carregar o resumo. <button class="btn btn--outline" (click)="carregar()">Tentar novamente</button></div>}
  @if(resumo();as r){
  <div class="finance-grid">
@@ -33,8 +34,8 @@ interface ResumoFinanceiro {
 })
 export class FinanceiroComponent implements OnInit {
  private readonly http=inject(HttpClient);
- readonly resumo=signal<ResumoFinanceiro|null>(null);readonly erro=signal(false);
+ readonly resumo=signal<ResumoFinanceiro|null>(null);readonly erro=signal(false);readonly carregando=signal(false);
  ngOnInit(){this.carregar();}
- carregar(){this.http.get<ResumoFinanceiro>(environment.apiUrl+'/financeiro/resumo').subscribe({next:r=>{this.resumo.set(r);this.erro.set(false);},error:()=>this.erro.set(true)});}
+ carregar(){this.carregando.set(true);this.http.get<ResumoFinanceiro>(environment.apiUrl+'/financeiro/resumo').subscribe({next:r=>{this.resumo.set(r);this.erro.set(false);this.carregando.set(false);},error:()=>{this.erro.set(true);this.carregando.set(false);}});}
  moeda(valor:number){return Number(valor||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
 }

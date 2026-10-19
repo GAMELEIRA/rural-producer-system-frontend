@@ -1,9 +1,9 @@
 name: Frontend CI
 on:
   push:
-    branches: [main, feat/conclusao-gestao-rural]
+    branches: [main, feat/conclusao-gestao-rural, fix/exclusao-plantacao-confirmacao]
   pull_request:
-    branches: [main]
+    branches: [main, feat/conclusao-gestao-rural]
 jobs:
   build:
     runs-on: ubuntu-latest
