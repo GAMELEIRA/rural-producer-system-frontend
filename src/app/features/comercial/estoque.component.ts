@@ -3,7 +3,6 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
-import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { CulturaService, InsumoService, ProdutoService } from '../../core/cadastros/cadastros.services';
 import { Cultura, Insumo, Produto } from '../../core/models/cadastros.model';
@@ -33,7 +32,7 @@ interface Saldo {
 
 @Component({
   selector: 'app-estoque',
-  imports: [ReactiveFormsModule, RouterLink, CurrencyPipe, DatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, CurrencyPipe, DatePipe, DecimalPipe],
   template: `
     <div class="page-header">
       <div><h1>Estoque da propriedade</h1><p>Um resumo por produto ou insumo. Abra os detalhes para ver cada entrada e saída.</p></div>
@@ -106,6 +105,7 @@ interface Saldo {
       <div class="card"><span>Valor atual em estoque</span><strong>{{valorAtual() | currency:'BRL'}}</strong></div>
     </div>
 
+    <p class="subtle">Valor estimado: saldo atual × preço cadastrado (preço de venda para produtos e preço unitário para insumos).</p>
     <div class="table-wrap">
       <table class="table">
         <thead><tr>
@@ -169,7 +169,7 @@ interface Saldo {
             } @empty {<tr><td colspan="5">Nenhuma movimentação encontrada para os filtros selecionados.</td></tr>}
           </tbody>
         </table></div>
-        <p class="subtle">O histórico de insumos é registrado a partir da implantação desta versão. Os saldos atuais incluem movimentações anteriores, mesmo que não constem no histórico.</p>
+        <p class="subtle">O histórico de insumos inclui aplicações ainda existentes importadas na migração e registros feitos após a atualização. Movimentações manuais antigas sem registro permanecem apenas no saldo atual.</p>
       </section>
     }
   `,
