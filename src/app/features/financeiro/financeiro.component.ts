@@ -17,6 +17,8 @@ interface ResumoFinanceiro {
  <div class="card"><span>Despesas operacionais</span><h2>{{moeda(r.despesasTotais)}}</h2></div>
  <div class="card"><span>Saldo operacional estimado</span><h2>{{moeda(r.saldoLiquido)}}</h2></div>
  <div class="card"><span>Margem operacional</span><h2>{{r.margemLucroPercentual}}%</h2></div>
+ <div class="card"><span>Perdas registradas (estimadas)</span><h2>{{moeda(r.custoTotalPerdas)}}</h2></div>
+ <div class="card"><span>Saldo projetado após perdas*</span><h2>{{moeda(r.saldoLiquido - r.custoTotalPerdas)}}</h2></div>
  </div>
  <div class="table-wrap" style="margin-top:1rem"><table class="table"><tbody>
  <tr><th>Vendas concluídas</th><td>{{r.totalVendasRealizadas}}</td></tr>
@@ -24,7 +26,7 @@ interface ResumoFinanceiro {
  <tr><th>Gastos de produção</th><td>{{moeda(r.custoTotalGastos)}}</td></tr>
  <tr><th>Perdas estimadas (informativas)</th><td>{{moeda(r.custoTotalPerdas)}}</td></tr>
  </tbody></table></div>
- <p>O saldo apresentado não desconta novamente as perdas estimadas, para evitar duplicidade com custos já registrados.</p>
+ <p>*Projeção informativa: considera as perdas estimadas como impacto adicional. O saldo operacional não desconta perdas novamente, porque podem representar valores já incluídos nos custos de produção. Não trate a projeção como lucro contábil.</p>
  }
  `,
  styles:[`.finance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem}.finance-grid h2{color:var(--color-primary-dark);margin-bottom:0}`]
