@@ -19,6 +19,7 @@ import { ConfirmService } from '../../core/notifications/confirm.service';
 <label>Observações<input type="text"  formControlName="observacoes"></label></div>
 <div class="form-actions"><button class="btn btn--primary" type="submit" [disabled]="saving()">Registrar</button></div></form>
 @if(error()){<div class="card">Não foi possível carregar os dados. <button class="btn btn--outline" (click)="carregar()">Tentar novamente</button></div>}
+@if(carregando()){<p role="status">Carregando custos da produção...</p>}
 <h2>Custos registrados</h2><div class="rural-cards">
 @for(item of lancamentos();track item.chave){<article class="card rural-entry">
 <button class="rural-entry__trigger" (click)="detalhe.set(detalhe()===item.chave?null:item.chave)" type="button">
@@ -38,7 +39,7 @@ export class GastosComponent implements OnInit {
  readonly registros=signal<Record<string,any>[]>([]);readonly plantacoes=signal<Plantacao[]>([]);readonly insumos=signal<Insumo[]>([]);
  readonly detalhe=signal<string|null>(null);
  readonly aplicacoes=signal<Record<string,any>[]>([]);
- readonly saving=signal(false);readonly error=signal(false);readonly campos=["idPlantacao","descricao","valor","dataGasto","categoria","observacoes"];
+ readonly saving=signal(false);readonly error=signal(false);readonly carregando=signal(false);readonly campos=["idPlantacao","descricao","valor","dataGasto","categoria","observacoes"];
  readonly form=this.fb.group({idPlantacao:[null as number|null,[Validators.required]],descricao:['',[Validators.required]],valor:[null as number|null,[Validators.required,Validators.min(0.01)]],dataGasto:['',[Validators.required]],categoria:['',[]],observacoes:['',[]]});
  private readonly endpoint=environment.apiUrl+'/gastos';
  ngOnInit(){this.carregar();}
@@ -47,7 +48,7 @@ export class GastosComponent implements OnInit {
  const insumos=this.aplicacoes().map(a=>({chave:'I'+a['idAplicacao'],titulo:'Insumo: '+String(a['nomeInsumo']||a['idInsumo']),data:String(a['dataAplicacao']),valor:Number(a['custoTotal']),plantacao:String(a['nomeCultura']||'Plantação #'+a['idPlantacao']),categoria:'INSUMOS_AGRICOLAS',automatico:true,original:null}));
  return [...gastos,...insumos].sort((a,b)=>b.data.localeCompare(a.data));}
 
- carregar(){forkJoin({registros:this.http.get<Record<string,any>[]>(this.endpoint),plantacoes:this.api.listarPlantacoes(),insumos:this.insumosApi.list(),aplicacoes:this.http.get<Record<string,any>[]>(environment.apiUrl+'/aplicacoes-insumo')}).subscribe({next:r=>{this.registros.set(r.registros);this.plantacoes.set(r.plantacoes);this.insumos.set(r.insumos);this.aplicacoes.set(r.aplicacoes);this.error.set(false);},error:()=>this.error.set(true)});}
+ carregar(){this.carregando.set(true);forkJoin({registros:this.http.get<Record<string,any>[]>(this.endpoint),plantacoes:this.api.listarPlantacoes(),insumos:this.insumosApi.list(),aplicacoes:this.http.get<Record<string,any>[]>(environment.apiUrl+'/aplicacoes-insumo')}).subscribe({next:r=>{this.registros.set(r.registros);this.plantacoes.set(r.plantacoes);this.insumos.set(r.insumos);this.aplicacoes.set(r.aplicacoes);this.error.set(false);this.carregando.set(false);},error:()=>{this.error.set(true);this.carregando.set(false);}});}
  salvar(){if(this.form.invalid){this.form.markAllAsTouched();this.notify.error('Preencha os campos obrigatórios.');return;}this.saving.set(true);this.http.post(this.endpoint,this.form.getRawValue()).subscribe({next:()=>{this.saving.set(false);this.form.reset();this.notify.success('Registro cadastrado.');this.carregar();},error:()=>this.saving.set(false)});}
  async excluir(item:Record<string,any>){if(!await this.confirm.ask({title:'Excluir registro',message:'Excluir o registro selecionado?',confirmLabel:'Excluir',danger:true}))return;this.http.delete(this.endpoint+'/'+item['idGasto']).subscribe(()=>{this.notify.success('Registro excluído.');this.carregar();});}
 }
