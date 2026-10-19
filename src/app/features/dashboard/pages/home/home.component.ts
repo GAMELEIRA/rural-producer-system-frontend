@@ -13,6 +13,20 @@ interface Shortcut {
   route: string;
 }
 
+interface ResumoDashboard {
+  totalPlantacoesAtivas: number;
+  totalSafrasEmAndamento: number;
+  receitaTotalVendas: number;
+  despesasTotais: number;
+  saldoLiquido: number;
+  totalVendasRealizadas: number;
+  custoTotalPerdas: number;
+}
+
+interface ResumoFinanceiro {
+  custoTotalPerdas: number;
+}
+
 @Component({
   selector: 'app-home',
   imports: [RouterLink],
@@ -24,12 +38,12 @@ export class HomeComponent implements OnInit {
   private readonly producaoApi = inject(ProducaoService);
   protected readonly colheitas = signal<{mes:string;quantidade:number}[]>([]);
   protected readonly maiorColheita = () => Math.max(1,...this.colheitas().map(x => x.quantidade));
-  protected readonly resumo = signal<{ totalPlantacoesAtivas:number; totalSafrasEmAndamento:number; receitaTotalVendas:number; despesasTotais:number; saldoLiquido:number; totalVendasRealizadas:number } | null>(null);
+  protected readonly resumo = signal<ResumoDashboard | null>(null);
   protected readonly graficos = signal<{vendasPorMes:{mesAno:string;total:number}[]; statusPlantacoes:{status:string;quantidade:number}[]} | null>(null);
   protected readonly dashboardError = signal(false);
   protected readonly maiorVenda = () => Math.max(1, ...(this.graficos()?.vendasPorMes.map(x => x.total) ?? []));
   ngOnInit(): void { this.carregarDashboard(); }
-  protected carregarDashboard(): void { forkJoin({resumo:this.http.get<NonNullable<ReturnType<typeof this.resumo>>>(environment.apiUrl + '/dashboard/resumo'), graficos:this.http.get<NonNullable<ReturnType<typeof this.graficos>>>(environment.apiUrl + '/dashboard/graficos'),plantacoes:this.producaoApi.listarPlantacoes()}).subscribe({next:({resumo,graficos,plantacoes})=>{const mapa = new Map<string,number>(); for(const p of plantacoes){if(p.dataColheita && p.quantidadeColhida != null && (p.status==='COLHIDA'||p.status==='COLHIDO')){const mes=p.dataColheita.slice(0,7);mapa.set(mes,(mapa.get(mes)||0)+Number(p.quantidadeColhida));}}this.colheitas.set([...mapa.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([mes,quantidade])=>({mes,quantidade})));this.resumo.set(resumo);this.graficos.set(graficos);this.dashboardError.set(false);},error:()=>this.dashboardError.set(true)}); }
+  protected carregarDashboard(): void { forkJoin({resumo:this.http.get<Omit<ResumoDashboard, 'custoTotalPerdas'>>(environment.apiUrl + '/dashboard/resumo'), financeiro:this.http.get<ResumoFinanceiro>(environment.apiUrl + '/financeiro/resumo'), graficos:this.http.get<NonNullable<ReturnType<typeof this.graficos>>>(environment.apiUrl + '/dashboard/graficos'),plantacoes:this.producaoApi.listarPlantacoes()}).subscribe({next:({resumo,financeiro,graficos,plantacoes})=>{const mapa = new Map<string,number>(); for(const p of plantacoes){if(p.dataColheita && p.quantidadeColhida != null && (p.status==='COLHIDA'||p.status==='COLHIDO')){const mes=p.dataColheita.slice(0,7);mapa.set(mes,(mapa.get(mes)||0)+Number(p.quantidadeColhida));}}this.colheitas.set([...mapa.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([mes,quantidade])=>({mes,quantidade})));this.resumo.set({...resumo,custoTotalPerdas:financeiro.custoTotalPerdas});this.graficos.set(graficos);this.dashboardError.set(false);},error:()=>this.dashboardError.set(true)}); }
 
   protected readonly auth = inject(AuthService);
 
