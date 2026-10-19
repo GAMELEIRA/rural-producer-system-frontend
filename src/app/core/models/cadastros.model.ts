@@ -10,6 +10,8 @@ export interface Cultura {
   cicloEstimado: number;
   unidadeCiclo: string;
   imagemCodigo?: string | null;
+  imagemPersonalizada?: string | null;
+  imagemPersonalizada?: string | null;
   observacoes?: string;
 }
 
@@ -39,6 +41,9 @@ export interface Produto {
   unidadeMedida: string;
   precoVenda: number;
   quantidadeEstoque: number;
+  idCultura?: number | null;
+  imagemCodigo?: string | null;
+  imagemPersonalizada?: string | null;
   observacoes?: string;
 }
 
