@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { AppModalComponent } from '../../shared/components/app-modal/app-modal.component';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
@@ -8,7 +9,7 @@ import { InsumoService } from '../../core/cadastros/cadastros.services';
 import { Insumo } from '../../core/models/cadastros.model';
 import { NotificationService } from '../../core/notifications/notification.service';
 import { ConfirmService } from '../../core/notifications/confirm.service';
-@Component({selector:'app-perdas', imports:[ReactiveFormsModule],template:`
+@Component({selector:'app-perdas', imports:[ReactiveFormsModule,AppModalComponent],template:`
 <div class="page-header"><div><h1>Perdas agrícolas</h1><p>Registre e acompanhe os lançamentos vinculados aos cultivos.</p></div></div>
 <form class="card" [formGroup]="form" (ngSubmit)="salvar()"><div class="form-grid"><label>Plantação *<select formControlName="idPlantacao"><option [ngValue]="null">Selecione</option>@for(p of plantacoes();track p.idPlantacao){<option [ngValue]="p.idPlantacao">{{p.nomeCultura}} - {{p.nomeTalhao}}</option>}</select></label>
 <label>Data da perda *<input type="date"  formControlName="dataPerda"></label>
@@ -21,9 +22,9 @@ import { ConfirmService } from '../../core/notifications/confirm.service';
 <div class="rural-cards">
 @for(item of registros();track item['idPerda']){<article class="card rural-entry">
 <button type="button" class="rural-entry__trigger" (click)="detalhe.set(detalhe()===item['idPerda']?null:item['idPerda'])">
-<strong>{{item['motivo']}}</strong><span>{{item['nomeCultura']||'Plantação #'+item['idPlantacao']}} · {{item['dataPerda']}}</span><strong>{{item['quantidade']}} perdidos</strong><span>Prejuízo: {{moeda(item['valorEstimado'])}}</span><span>Ver detalhes {{detalhe()===item['idPerda']?'▲':'▼'}}</span>
+<strong>{{item['motivo']}}</strong><span>{{item['nomeCultura']||'Plantação #'+item['idPlantacao']}} · {{item['dataPerda']}}</span><strong>{{item['quantidade']}} perdidos</strong><span>Prejuízo: {{moeda(item['valorEstimado'])}}</span><span>Ver detalhes</span>
 </button>
-@if(detalhe()===item['idPerda']){<div class="rural-entry__detail"><p>Registro #{{item['idPerda']}} · Talhão: {{item['nomeTalhao']||'—'}}</p><p>{{item['observacoes']||'Sem observações adicionais'}}</p><button class="btn btn--danger btn--sm" (click)="excluir(item)">Excluir perda</button></div>}
+@if(detalhe()===item['idPerda']){<app-modal titulo="Perda agrícola" (fechado)="detalhe.set(null)"><p>Registro #{{item['idPerda']}} · Talhão: {{item['nomeTalhao']||'—'}}</p><p>{{item['observacoes']||'Sem observações adicionais'}}</p><button class="btn btn--danger btn--sm" (click)="excluir(item)">Excluir perda</button></app-modal>}
 </article>}@empty{<div class="card">Nenhuma perda registrada.</div>}
 </div>
 `})
