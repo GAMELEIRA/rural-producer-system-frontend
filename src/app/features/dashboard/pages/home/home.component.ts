@@ -13,6 +13,20 @@ interface Shortcut {
   route: string;
 }
 
+interface ResumoDashboard {
+  totalPlantacoesAtivas: number;
+  totalSafrasEmAndamento: number;
+  receitaTotalVendas: number;
+  despesasTotais: number;
+  saldoLiquido: number;
+  totalVendasRealizadas: number;
+  custoTotalPerdas: number;
+}
+
+interface ResumoFinanceiro {
+  custoTotalPerdas: number;
+}
+
 @Component({
   selector: 'app-home',
   imports: [RouterLink],
