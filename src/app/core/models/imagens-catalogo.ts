@@ -3,9 +3,9 @@
  */
 export interface ImagemCatalogo { codigo: string; nome: string; grupo: string; icone: string; url: string; }
 const cdn = 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/';
-const emojiCode = (emoji: string) => [...emoji].map(c => c.codePointAt(0)?.toString(16)).filter(Boolean).join('-');
+const emojiCode = (emoji: string) => [...emoji].filter(c=>c.codePointAt(0)!==0xfe0f).map(c => c.codePointAt(0)?.toString(16)).filter(Boolean).join('-');
 const grupo = (nomeGrupo: string, itens: ReadonlyArray<[string,string,string]>): ImagemCatalogo[] =>
-  itens.map(([codigo,nome,icone]) => ({codigo,nome,grupo:nomeGrupo,icone,url:cdn+emojiCode(icone)+'.svg'}));
+  itens.map(([codigo,nome,icone]) => ({codigo,nome,grupo:nomeGrupo,icone,url:codigo==='BETERRABA' ? '/images/beterraba.svg' : cdn+emojiCode(icone)+'.svg'}));
 
 export const IMAGENS_CULTURAS: readonly ImagemCatalogo[] = [
   ...grupo('Hortaliças folhosas', [
@@ -16,7 +16,7 @@ export const IMAGENS_CULTURAS: readonly ImagemCatalogo[] = [
   ]),
   ...grupo('Legumes, raízes e tubérculos', [
     ['CENOURA','Cenoura','🥕'], ['BETERRABA','Beterraba','🫜'], ['BATATA','Batata','🥔'],
-    ['BATATA_DOCE','Batata-doce','🍠'], ['MANDIOCA','Mandioca','🫜'], ['RABANETE','Rabanete','🫜'],
+    ['BATATA_DOCE','Batata-doce','🍠'], ['MANDIOCA','Mandioca','🌱'], ['RABANETE','Rabanete','🥕'],
     ['ABOBRINHA','Abobrinha','🥒'], ['PEPINO','Pepino','🥒'], ['BERINJELA','Berinjela','🍆'],
     ['CHUCHU','Chuchu','🌱']
   ]),
