@@ -18,6 +18,7 @@ import { ConfirmService } from '../../core/notifications/confirm.service';
 <label>Observações<input type="text"  formControlName="observacoes"></label></div>
 <div class="form-actions"><button class="btn btn--primary" type="submit" [disabled]="saving()">Registrar</button></div></form>
 @if(error()){<div class="card">Não foi possível carregar os dados. <button class="btn btn--outline" (click)="carregar()">Tentar novamente</button></div>}
+@if(carregando()){<p role="status">Consultando aplicações de insumos...</p>}
 <div class="rural-cards">
 @for(item of registros();track item['idAplicacao']) {
  <article class="card rural-entry"><button type="button" class="rural-entry__trigger" (click)="detalhe.set(detalhe()===item['idAplicacao']?null:item['idAplicacao'])">
@@ -32,7 +33,7 @@ export class AplicacoesInsumoComponent implements OnInit {
  private readonly fb=inject(FormBuilder).nonNullable;private readonly notify=inject(NotificationService);private readonly confirm=inject(ConfirmService);
  readonly registros=signal<Record<string,any>[]>([]);readonly plantacoes=signal<Plantacao[]>([]);readonly insumos=signal<Insumo[]>([]);
  readonly detalhe=signal<number|null>(null);
- readonly saving=signal(false);readonly error=signal(false);readonly campos=["idPlantacao","idInsumo","dataAplicacao","quantidade","observacoes"];
+ readonly saving=signal(false);readonly error=signal(false);readonly carregando=signal(false);readonly campos=["idPlantacao","idInsumo","dataAplicacao","quantidade","observacoes"];
  readonly form=this.fb.group({idPlantacao:[null as number|null,[Validators.required]],idInsumo:[null as number|null,[Validators.required]],dataAplicacao:['',[Validators.required]],quantidade:[null as number|null,[Validators.required,Validators.min(0.01)]],observacoes:['',[]]});
  private readonly endpoint=environment.apiUrl+'/aplicacoes-insumo';
  ngOnInit(){this.form.controls.idInsumo.valueChanges.subscribe(id=>{const insumo=this.insumos().find(i=>i.idInsumo===id);this.form.controls.quantidade.setValue(insumo?.quantidadeEstoque??null);});this.carregar();}
@@ -44,7 +45,7 @@ export class AplicacoesInsumoComponent implements OnInit {
  moeda(v:number){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
  custoPrevisto(){const p=this.insumos().find(i=>i.idInsumo===this.form.controls.idInsumo.value);return Number(this.form.controls.quantidade.value||0)*Number(p?.precoUnitario||0);}
 
- carregar(){forkJoin({registros:this.http.get<Record<string,any>[]>(this.endpoint),plantacoes:this.api.listarPlantacoes(),insumos:this.insumosApi.list()}).subscribe({next:r=>{this.registros.set(r.registros);this.plantacoes.set(r.plantacoes);this.insumos.set(r.insumos);this.error.set(false);},error:()=>this.error.set(true)});}
+ carregar(){this.carregando.set(true);forkJoin({registros:this.http.get<Record<string,any>[]>(this.endpoint),plantacoes:this.api.listarPlantacoes(),insumos:this.insumosApi.list()}).subscribe({next:r=>{this.registros.set(r.registros);this.plantacoes.set(r.plantacoes);this.insumos.set(r.insumos);this.error.set(false);this.carregando.set(false);},error:()=>{this.error.set(true);this.carregando.set(false);}});}
  salvar(){if(this.form.invalid){this.form.markAllAsTouched();this.notify.error('Preencha os campos obrigatórios.');return;}if(Number(this.form.controls.quantidade.value)>this.saldoDisponivel()){this.notify.error('Quantidade superior ao saldo disponível.');return;}this.saving.set(true);this.http.post(this.endpoint,this.form.getRawValue()).subscribe({next:()=>{this.saving.set(false);this.form.reset();this.notify.success('Registro cadastrado.');this.carregar();},error:()=>this.saving.set(false)});}
  async excluir(item:Record<string,any>){if(!await this.confirm.ask({title:'Excluir registro',message:'Excluir o registro selecionado?',confirmLabel:'Excluir',danger:true}))return;this.http.delete(this.endpoint+'/'+item['idAplicacao']).subscribe(()=>{this.notify.success('Registro excluído.');this.carregar();});}
 }
