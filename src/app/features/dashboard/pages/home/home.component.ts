@@ -34,31 +34,11 @@ export class HomeComponent implements OnInit {
   protected readonly auth = inject(AuthService);
 
   protected readonly shortcuts: Shortcut[] = [
-    {
-      label: 'Culturas',
-      description: 'Tipos de cultura cultivados (milho, soja, tomate...).',
-      icon: '🌱',
-      route: '/culturas',
-    },
-    {
-      label: 'Talhões',
-      description: 'Áreas físicas de cultivo da propriedade.',
-      icon: '🗺️',
-      route: '/talhoes',
-    },
-    {
-      label: 'Insumos',
-      description: 'Sementes, fertilizantes e defensivos em estoque.',
-      icon: '🧪',
-      route: '/insumos',
-    },
-    {
-      label: 'Produtos',
-      description: 'Produtos colhidos disponíveis para venda.',
-      icon: '📦',
-      route: '/produtos',
-    },
-    { label: 'Safras', description: 'Gerencie os períodos de produção.', icon: '📅', route: '/safras' },
-    { label: 'Plantações', description: 'Acompanhe os cultivos e registre colheitas.', icon: '🌾', route: '/plantacoes' },
+    { label: '1. Safras', description: 'Defina o período da produção.', icon: '📅', route: '/safras' },
+    { label: '2. Preparação', description: 'Cadastre culturas, talhões e insumos.', icon: '🌱', route: '/culturas' },
+    { label: '3. Plantações', description: 'Registre o plantio e acompanhe a colheita.', icon: '🌾', route: '/plantacoes' },
+    { label: '4. Manejo', description: 'Aplique insumos e acompanhe os custos.', icon: '💧', route: '/aplicacoes-insumo' },
+    { label: '5. Colheita e estoque', description: 'Registre a produção e consulte o saldo.', icon: '📦', route: '/estoque' },
+    { label: '6. Vendas', description: 'Comercialize os produtos disponíveis.', icon: '💰', route: '/vendas' },
   ];
 }
