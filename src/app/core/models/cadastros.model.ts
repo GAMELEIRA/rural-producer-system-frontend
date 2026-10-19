@@ -11,7 +11,6 @@ export interface Cultura {
   unidadeCiclo: string;
   imagemCodigo?: string | null;
   imagemPersonalizada?: string | null;
-  imagemPersonalizada?: string | null;
   observacoes?: string;
 }
 
@@ -32,6 +31,7 @@ export interface Insumo {
   quantidadeEstoque: number;
   precoUnitario: number;
   imagemCodigo?: string | null;
+  imagemPersonalizada?: string | null;
   observacoes?: string;
 }
 
