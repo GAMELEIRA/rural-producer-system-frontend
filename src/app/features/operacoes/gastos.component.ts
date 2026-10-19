@@ -5,13 +5,24 @@ import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ProducaoService, Plantacao } from '../producao/producao.service';
+import { rotuloPlantacao, descricaoPlantacao } from '../producao/plantacao-identificacao';
 import { InsumoService } from '../../core/cadastros/cadastros.services';
 import { Insumo } from '../../core/models/cadastros.model';
 import { NotificationService } from '../../core/notifications/notification.service';
 import { ConfirmService } from '../../core/notifications/confirm.service';
 @Component({selector:'app-gastos', imports:[ReactiveFormsModule,AppModalComponent],template:`
 <div class="page-header"><div><h1>Custos da produção</h1><p>Aplicações de insumos são lançadas automaticamente como custos. Cadastre aqui somente despesas adicionais.</p></div></div>
-<form class="card" [formGroup]="form" (ngSubmit)="salvar()"><div class="form-grid"><label>Plantação *<select formControlName="idPlantacao"><option [ngValue]="null">Selecione</option>@for(p of plantacoes();track p.idPlantacao){<option [ngValue]="p.idPlantacao">{{p.nomeCultura}} - {{p.nomeTalhao}}</option>}</select></label>
+<form class="card" [formGroup]="form" (ngSubmit)="salvar()"><div class="form-grid"><label>Plantação *
+<select formControlName="idPlantacao">
+  <option [ngValue]="null">Selecione</option>
+  @for (p of plantacoes(); track p.idPlantacao) {
+    <option [ngValue]="p.idPlantacao">{{rotuloPlantacao(p)}}</option>
+  }
+</select>
+@if (plantacaoSelecionada(); as selecionada) {
+  <small>{{descricaoPlantacao(selecionada)}}</small>
+}
+</label>
 <label>Descrição *<input type="text"  formControlName="descricao"></label>
 <label>Valor (R$) *<input type="number" step="0.01" min="0" formControlName="valor"></label>
 <label>Data *<input type="date"  formControlName="dataGasto"></label>
@@ -36,16 +47,25 @@ import { ConfirmService } from '../../core/notifications/confirm.service';
 export class GastosComponent implements OnInit {
  private readonly http=inject(HttpClient);private readonly api=inject(ProducaoService);private readonly insumosApi=inject(InsumoService);
  private readonly fb=inject(FormBuilder).nonNullable;private readonly notify=inject(NotificationService);private readonly confirm=inject(ConfirmService);
+ readonly rotuloPlantacao = rotuloPlantacao;
+ readonly descricaoPlantacao = descricaoPlantacao;
  readonly registros=signal<Record<string,any>[]>([]);readonly plantacoes=signal<Plantacao[]>([]);readonly insumos=signal<Insumo[]>([]);
  readonly detalhe=signal<string|null>(null);
  readonly aplicacoes=signal<Record<string,any>[]>([]);
  readonly saving=signal(false);readonly error=signal(false);readonly carregando=signal(false);readonly campos=["idPlantacao","descricao","valor","dataGasto","categoria","observacoes"];
  readonly form=this.fb.group({idPlantacao:[null as number|null,[Validators.required]],descricao:['',[Validators.required]],valor:[null as number|null,[Validators.required,Validators.min(0.01)]],dataGasto:['',[Validators.required]],categoria:['',[]],observacoes:['',[]]});
+ plantacaoSelecionada(): Plantacao | null {
+   return this.plantacoes().find(p => p.idPlantacao === this.form.controls.idPlantacao.value) ?? null;
+ }
  private readonly endpoint=environment.apiUrl+'/gastos';
  ngOnInit(){this.carregar();}
+ identificacaoPorId(id:number,nomeCultura?:string): string {
+   const p = this.plantacoes().find(p=>p.idPlantacao===id);
+   return p ? rotuloPlantacao(p) : (nomeCultura || 'Plantação') + ' · #' + id;
+ }
  moeda(valor:number){return Number(valor||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
- lancamentos(){const gastos=this.registros().map(g=>({chave:'G'+g['idGasto'],titulo:String(g['descricao']),data:String(g['dataGasto']),valor:Number(g['valor']),plantacao:String(g['nomeCultura']||'Plantação #'+g['idPlantacao']),categoria:String(g['categoria']||'OUTROS'),automatico:false,original:g}));
- const insumos=this.aplicacoes().map(a=>({chave:'I'+a['idAplicacao'],titulo:'Insumo: '+String(a['nomeInsumo']||a['idInsumo']),data:String(a['dataAplicacao']),valor:Number(a['custoTotal']),plantacao:String(a['nomeCultura']||'Plantação #'+a['idPlantacao']),categoria:'INSUMOS_AGRICOLAS',automatico:true,original:null}));
+ lancamentos(){const gastos=this.registros().map(g=>({chave:'G'+g['idGasto'],titulo:String(g['descricao']),data:String(g['dataGasto']),valor:Number(g['valor']),plantacao:this.identificacaoPorId(g['idPlantacao'],g['nomeCultura']),categoria:String(g['categoria']||'OUTROS'),automatico:false,original:g}));
+ const insumos=this.aplicacoes().map(a=>({chave:'I'+a['idAplicacao'],titulo:'Insumo: '+String(a['nomeInsumo']||a['idInsumo']),data:String(a['dataAplicacao']),valor:Number(a['custoTotal']),plantacao:this.identificacaoPorId(a['idPlantacao'],a['nomeCultura']),categoria:'INSUMOS_AGRICOLAS',automatico:true,original:null}));
  return [...gastos,...insumos].sort((a,b)=>b.data.localeCompare(a.data));}
 
  carregar(){this.carregando.set(true);forkJoin({registros:this.http.get<Record<string,any>[]>(this.endpoint),plantacoes:this.api.listarPlantacoes(),insumos:this.insumosApi.list(),aplicacoes:this.http.get<Record<string,any>[]>(environment.apiUrl+'/aplicacoes-insumo')}).subscribe({next:r=>{this.registros.set(r.registros);this.plantacoes.set(r.plantacoes);this.insumos.set(r.insumos);this.aplicacoes.set(r.aplicacoes);this.error.set(false);this.carregando.set(false);},error:()=>{this.error.set(true);this.carregando.set(false);}});}
