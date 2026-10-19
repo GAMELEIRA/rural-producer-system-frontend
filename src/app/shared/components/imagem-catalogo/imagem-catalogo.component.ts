@@ -39,7 +39,11 @@ import { ImagemCatalogo } from '../../../core/models/imagens-catalogo';
             [attr.aria-pressed]="selected === imagem.codigo && !personalizada"
             [attr.aria-label]="'Selecionar imagem: ' + imagem.nome"
             (click)="escolher(imagem.codigo)">
-            <img [src]="imagem.url" [alt]="imagem.nome" loading="lazy">
+            @if (imagensIndisponiveis().has(imagem.codigo)) {
+              <span class="picker__emoji" aria-hidden="true">{{imagem.icone}}</span>
+            } @else {
+              <img [src]="imagem.url" [alt]="imagem.nome" loading="lazy" (error)="indisponivel(imagem.codigo)">
+            }
             <span>{{imagem.nome}}</span>
           </button>
         }
@@ -74,6 +78,8 @@ export class ImagemCatalogoComponent {
   @Output() personalizadaChange = new EventEmitter<string>();
   readonly pesquisa = signal('');
   readonly erro = signal('');
+  readonly imagensIndisponiveis = signal(new Set<string>());
+  indisponivel(codigo:string){this.imagensIndisponiveis.update(atual=>new Set([...atual,codigo]));}
   readonly processando = signal(false);
 
   grupos(): {nome:string;imagens:ImagemCatalogo[]}[] {
